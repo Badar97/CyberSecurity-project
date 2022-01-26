@@ -7,9 +7,8 @@
     "quorum-js": "^0.3.6",
     "readline-sync": "^1.4.10",
     "solc": "^0.8.11",
-    "web3": "^1.6.1"
+    "web3": "^1.7.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
