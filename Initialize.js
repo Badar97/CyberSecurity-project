@@ -38,7 +38,7 @@ async function deploy_handler(e, transactionHash) {
         			console.log("Error creating contract", e);
       			} 
 }
-ciao
+
 
 function receipt_handler(receipt) {
 	try {
