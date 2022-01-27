@@ -23,8 +23,8 @@ contract CarbonFootPrint {
 
     mapping(string => Product) private getProductsByName;
     mapping(string => Product) private getProductsByLot;
-    mapping(string => Product) private getRawMaterialByLot;
-    mapping(string => Product) private getRawMaterialByName;
+    mapping(string => RawMaterial) private getRawMaterialByLot;
+    mapping(string => RawMaterial) private getRawMaterialByName;
 
     mapping(string => bool) private ExistLot_RawMaterial;
     mapping(string => bool) private ExistLot_Product;
@@ -39,11 +39,11 @@ contract CarbonFootPrint {
         customer = _customer;
     }
 
-    function AddRawMaterial(string memory _name , string memory _lot, uint256  _carbonfootprint, uint256  _amount) public{
-        require (msg.sender == supplier , "Errore: Questa funzione deve essere chiamata solo dai fornitori ");
-        require (_amount > 0 , "Errore: hai inserito un ammontare di materia prima minore o uguale di 0");
-        require (!ExistLot_RawMaterial[_lot], "Errore: Lotto gia' esistente");
-        require (_carbonfootprint >=0 , "Errore: CarbonFootPrint deve essere maggiore o uguale a 0");
+    function AddRawMaterial(string memory _name, string memory _lot, uint256  _carbonfootprint, uint256  _amount) public {
+        require (msg.sender == supplier , "Errore! Questa funzione deve essere chiamata solo dai fornitori");
+        require (_amount > 0 , "Errore! Hai inserito un ammontare di materia prima minore o uguale di 0");
+        require (!ExistLot_RawMaterial[_lot], "Errore! Lotto gia' esistente");
+        require (_carbonfootprint >=0 , "Errore! CarbonFootPrint deve essere maggiore o uguale a 0");
 
         RawMaterial memory material = RawMaterial({
             name_RawMaterial: _name ,
@@ -52,9 +52,10 @@ contract CarbonFootPrint {
             amount_RawMaterial: _amount ,
             residual_amount_RawMaterial: _amount });
 
-        storage getRawMaterialByLot[_lot] = material;
-        memory getRawMaterialByName[_name] = material;
-        memory ExistLot_RawMaterial[_lot] = true;
+        getRawMaterialByLot[_lot] = material;
+        getRawMaterialByName[_name] = material;
+        ExistLot_RawMaterial[_lot] = true;
 
 
-            }
+    }
+}

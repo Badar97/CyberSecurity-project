@@ -4,6 +4,7 @@
   "description": "A demo for managing smart contracts using javascript",
   "main": "demo1.js",
   "dependencies": {
+    "inquirer": "^8.2.0",
     "quorum-js": "^0.3.6",
     "readline-sync": "^1.4.10",
     "solc": "^0.8.11",

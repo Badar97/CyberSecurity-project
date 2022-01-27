@@ -1,25 +1,38 @@
 const rl = require("readline-sync");
-const Web3 = require("web3"); // fa riferimento al modulo Javascript 
+const Web3 = require("web3");
+const fs = require("fs");
+const inquirer = require('inquirer');
 
+const address = JSON.parse(fs.readFileSync('address.json'));
 
-var Menu = require('terminal-menu');
-var menu = Menu({ width: 29, x: 4, y: 2 });
+var question = [
+	{
+		type: 'list',
+		name: 'address',
+		message: 'SELEZIONA UN WALLET',
+		choices: [...address, ...['EXIT']]
+	}
+]
+
+inquirer.prompt(question).then((answer) => {
+    console.log(answer.address);
+  });
+
+/*
+  var Menu = require('terminal-menu');
+var menu = Menu({ width: 50, bg: 'red', padding: 0 });
 menu.reset();
-menu.write('SERIOUS BUSINESS TERMINAL\n');
+menu.write('SELEZIONA UN WALLET\n');
 menu.write('-------------------------\n');
- 
-menu.add('ADD TRANSACTION INVOICE');
-menu.add('BUSINESS INTELLIGENCE');
-menu.add('ACCOUNTS PAYABLE');
-menu.add('LEDGER BOOKINGS');
-menu.add('INDICATOR CHART METRICS');
-menu.add('BACKUP DATA TO FLOPPY DISK');
-menu.add('RESTORE FROM FLOPPY DISK');
+
+address.forEach(element => {
+	menu.add(element);
+});
 menu.add('EXIT');
  
 menu.on('select', function (label) {
     menu.close();
-    console.log('\nSELECTED: ' + label);
+	console.log(label);
 });
 
 process.stdin.pipe(menu.createStream()).pipe(process.stdout); 
@@ -29,49 +42,13 @@ menu.on('close', function () {
     process.stdin.setRawMode(false);
     process.stdin.end();
 });
+*/
 
 return;
-
-let mycontract = require("./mycontract.js");
-let trasformatore = require("./Utenti/Trasformatore");
 
 let web3 = new Web3('http://localhost:22000');
 let web3_2 = new Web3('http://localhost:22001');
 let web3_3 = new Web3('http://localhost:22002');
-
-function ArrayToLowerCase(array){
-  appoggio = Array();
-  array.forEach(element => {
-	  appoggio.push(element.toString().toLowerCase());
-  });
-  return appoggio;
-}
-
-
-
-var account_address = rl.question("Inserisci indirizzo account: ");
-web3.eth.getAccounts().then((value) => {
-	if(ArrayToLowerCase(value).includes(account_address.toLowerCase())){
-		start(account_address);
-	}
-	else {
-		web3_2.eth.getAccounts().then((value) => {
-			if(ArrayToLowerCase(value).includes(account_address.toLowerCase())){
-				demo(account_address);
-			}
-			else {
-				web3_3.eth.getAccounts().then((value) => {
-					if(ArrayToLowerCase(value).includes(account_address.toLowerCase())){
-						demo(account_address);
-					}
-					else {
-						console.log("Account non presente in alcun nodo");
-					}
-				});
-			}
-		}); 
-	}
-}); 
 
 let myAccountAddress = null;
 var abi = null;
