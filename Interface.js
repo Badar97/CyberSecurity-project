@@ -35,15 +35,15 @@ function start(myAccountAddress) {
 		
 		console.log("Transaction count: ", value); 
 		
-		var values = mycontract.compile("CarbonFootprint/CarbonFootprint.sol"); 
+		var abi = mycontract.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
 		var contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
 
-		var myContract = new web3.eth.Contract(values[0], contractAddress);
+		var myContract = new web3.eth.Contract(abi, contractAddress);
 			
 		const tx = {
 			from: myAccountAddress,
 			to: contractAddress,
-			data: myContract.methods.AddRawMaterial('farina', '002', 10, 10).encodeABI(),
+			data: myContract.methods.AddRawMaterial('farina', '003', 10, 10).encodeABI(),
 			gas: 1500000, 
 			gasPrice: '0',
 			nonce: value
