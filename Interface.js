@@ -3,109 +3,84 @@ const Web3 = require("web3");
 const fs = require("fs");
 const inquirer = require('inquirer');
 
-const address = JSON.parse(fs.readFileSync('address.json'));
+let mycontract = require("./mycontract.js");
+
+const wallets = JSON.parse(fs.readFileSync('wallets.json'));
 
 var question = [
 	{
 		type: 'list',
 		name: 'address',
 		message: 'SELEZIONA UN WALLET',
-		choices: [...address, ...['EXIT']]
+		choices: [...wallets, ...['EXIT']]
 	}
 ]
 
 inquirer.prompt(question).then((answer) => {
-    console.log(answer.address);
+    switch(answer.address) {
+		case wallets[0]: start(wallets[0]); break;
+		case wallets[1]: console.log(answer); break;
+		case wallets[2]: console.log(answer); break;
+		default: console.log('Ciao!'); return;
+	}
   });
-
-/*
-  var Menu = require('terminal-menu');
-var menu = Menu({ width: 50, bg: 'red', padding: 0 });
-menu.reset();
-menu.write('SELEZIONA UN WALLET\n');
-menu.write('-------------------------\n');
-
-address.forEach(element => {
-	menu.add(element);
-});
-menu.add('EXIT');
- 
-menu.on('select', function (label) {
-    menu.close();
-	console.log(label);
-});
-
-process.stdin.pipe(menu.createStream()).pipe(process.stdout); 
-process.stdin.setRawMode(true);
-
-menu.on('close', function () {
-    process.stdin.setRawMode(false);
-    process.stdin.end();
-});
-*/
-
-return;
 
 let web3 = new Web3('http://localhost:22000');
 let web3_2 = new Web3('http://localhost:22001');
 let web3_3 = new Web3('http://localhost:22002');
 
-let myAccountAddress = null;
-var abi = null;
-var bytecode = null;
-var contractAddress = null;
+function start(myAccountAddress) {
+	
+	web3.eth.getTransactionCount(myAccountAddress).then((value) => { 
+		
+		console.log("Transaction count: ", value); 
+		
+		var values = mycontract.compile("CarbonFootprint/CarbonFootprint.sol"); 
+		var contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
 
-function start(address) {
-    
-    myAccountAddress = address;
-    console.log("Used account: " + address);
-    
-   
-    var values = mycontract.compile("CarbonFootPrint.sol"); 
-    abi = values[0];
-    bytecode = values[1];
-    var simpleContract = new web3.eth.Contract(abi, { from: address } );
+		var myContract = new web3.eth.Contract(values[0], contractAddress);
+			
+		const tx = {
+			from: myAccountAddress,
+			to: contractAddress,
+			data: myContract.methods.AddRawMaterial('farina', '002', 10, 10).encodeABI(),
+			gas: 1500000, 
+			gasPrice: '0',
+			nonce: value
+		};
 
-    // 1. deploy the smart contract
-    var simple = simpleContract.deploy({data: "0x" + bytecode, }).
-		send({ from:address, gas: 1500000, gasPrice: '0' }, deploy_handler).
-		on('receipt', receipt_handler); //.
-//		on('confirmation', (num, eonfirmation) => { console.log("Confirmation: ", num, confirmation); } ).then((newContractInstance) => { console.log("Deployed contract at address: ", newContractInstance.options.address); });
-    console.log("Simple contract deploying ...");
-}
+		const signPromise = web3.eth.signTransaction(tx, myAccountAddress);
 
-async function deploy_handler(e, transactionHash) {
-			console.log("Submitted transaction with hash: ", transactionHash);
-      			if (e) {
-        			console.log("err creating contract", e);
-      			} 
-}
+		console.log("Sign promise: ", signPromise);
+		signPromise.then((signedTransaction) => {
+			const sentTx = web3.eth.sendSignedTransaction(signedTransaction.raw || signedTransaction.rawTransaction);
 
-/*
-function receipt_handler(receipt) {
-	try {
-		contractAddress = receipt.contractAddress;
-    		console.log("Contract mined: " + receipt.contractAddress);
-    		console.log(receipt);
-    
-		web3.eth.getTransactionCount(myAccountAddress).then((value) => { 
-			console.log("Transaction count: ", value); 
-	    		
-						var myContract2 = new web3.eth.Contract(abi, contractAddress);
-						console.log("myContract2 created ...");
- 						let res = myContract2.methods.getUsersTipo(myAccountAddress).call(function (err, res) { if (err) { console.error("Error calling: ", err); } else { console.log("Tipo utente: ", res); } });
-						
-						 console.log("Call passed");
-					} catch (err) {
-						console.log("Error during call: ", err);
-					}
+			sentTx.on("error", (error) => {
+				console.log("Transaction error: ", error);
+			});
 
+		sentTx.on("receipt", (receipt) => {
+			console.log("Transaction receipt: ", receipt);
+			/*
+			try {
+				console.log("Ready to call ...");
+				var myContract2 = new web3.eth.Contract(abi, contractAddress);
+				console.log("myContract2 created ...");
+				let res = myContract2.methods.retrieve().call(function (err, res) { if (err) { console.error("Error calling: ", err); } else { console.log("Call result: ", res); } });
+				
+				console.log("Call passed");
+			} catch (err) {
+				console.log("Error during call: ", err);
+			}
+			*/
 
 		});
+		}).catch((error) => {
 
-	} catch (err) {
-		console.error("Error handling receipt: ", err);
-	}
+			console.log("Sign Promise error: ", error);
+		}); 
 
-} 
-*/
+
+	});
+	
+}

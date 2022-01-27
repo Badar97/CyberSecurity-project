@@ -33,14 +33,15 @@ contract CarbonFootPrint {
     address transformer;
     address customer;
     
+    /*
     constructor(address _supplier, address _transformer, address _customer){
         supplier = _supplier;
         transformer = _transformer;
         customer = _customer;
-    }
+    }*/
 
     function AddRawMaterial(string memory _name, string memory _lot, uint256  _carbonfootprint, uint256  _amount) public {
-        require (msg.sender == supplier , "Errore! Questa funzione deve essere chiamata solo dai fornitori");
+        //require (msg.sender == supplier , "Errore! Questa funzione deve essere chiamata solo dai fornitori");
         require (_amount > 0 , "Errore! Hai inserito un ammontare di materia prima minore o uguale di 0");
         require (!ExistLot_RawMaterial[_lot], "Errore! Lotto gia' esistente");
         require (_carbonfootprint >=0 , "Errore! CarbonFootPrint deve essere maggiore o uguale a 0");
