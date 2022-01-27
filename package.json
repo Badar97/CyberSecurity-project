@@ -7,6 +7,7 @@
     "quorum-js": "^0.3.6",
     "readline-sync": "^1.4.10",
     "solc": "^0.8.11",
+    "terminal-menu": "^2.1.1",
     "web3": "^1.7.0"
   },
   "scripts": {
