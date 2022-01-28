@@ -8,6 +8,8 @@ let web3 = new Web3('http://localhost:22000');
 
 function fornitore(address) {
 
+	console.log('HAI SELEZIONATO UN ACCOUNT FORNITORE');
+
     var question = {
             type: 'list',
             name: 'action',
@@ -21,8 +23,7 @@ function fornitore(address) {
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
             case question.choices[0]: start(address); break;
-            case question.choices[1]: console.log('Ciao!'); break;
-            default: console.log('Ciao!'); return;
+            case question.choices[1]: default: return;
         }
     });
 
