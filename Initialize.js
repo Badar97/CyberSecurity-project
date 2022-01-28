@@ -1,7 +1,6 @@
 const Web3 = require("web3");
-var fs = require("fs");
-
-let mycontract = require("./mycontract.js");
+const fs = require("fs");
+const mycontract = require("./mycontract.js");
 
 let web3 = new Web3('http://localhost:22000');
 let web3_2 = new Web3('http://localhost:22001');
