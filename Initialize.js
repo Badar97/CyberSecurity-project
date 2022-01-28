@@ -35,9 +35,11 @@ function deploy(address) {
 	abi = values[0];
 	bytecode = values[1];
 
-	var simpleContract = new web3.eth.Contract(abi, { from: address } );
+	var wallets = JSON.parse(fs.readFileSync('wallets.json'));
 
-	simpleContract.deploy({ data: "0x" + bytecode }).
+	var simpleContract = new web3.eth.Contract(abi);
+
+	simpleContract.deploy({ data: "0x" + bytecode, arguments: wallets}).
 		send({ from: address, gas: 1500000, gasPrice: '0' }, deploy_handler).
 		on('receipt', receipt_handler); 
 

@@ -6,7 +6,11 @@ const mycontract = require("../mycontract.js");
 
 let web3 = new Web3('http://localhost:22000');
 
+var myAccountAddress = null;
+
 function fornitore(address) {
+
+	myAccountAddress = address;
 
 	console.log('HAI SELEZIONATO UN ACCOUNT FORNITORE');
 
@@ -16,20 +20,22 @@ function fornitore(address) {
             message: 'SELEZIONA UN\'OPERAZIONE',
             choices: [
                 'INSERIMENTO DI MATERIE PRIME',
+				'PROVA',
                 'EXIT'
             ]
     }
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: start(address); break;
-            case question.choices[1]: default: return;
+            case question.choices[0]: start(); break;
+			case question.choices[1]: prova(); break;
+            case question.choices[2]: default: return;
         }
     });
 
 }
 
-function start(myAccountAddress) {
+function start() {
 	
 	web3.eth.getTransactionCount(myAccountAddress).then((value) => { 
 		
@@ -83,6 +89,16 @@ function start(myAccountAddress) {
 
 	});
 	
+}
+
+function prova() {
+
+	var abi = mycontract.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
+	var contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
+
+	var contract = new web3.eth.Contract(abi, contractAddress);
+	contract.methods.prova().call().then((value) => {console.log(value)});
+
 }
 
 exports.fornitore = fornitore;
