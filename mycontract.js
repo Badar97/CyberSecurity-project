@@ -32,7 +32,7 @@ function compile(filepath) {
     	bytecode = output.contracts[filepath][contractName].evm.bytecode.object;
     	abi = output.contracts[filepath][contractName].abi;
     
-    	console.log(contractName + " ABI: ", abi);
+    	// console.log(contractName + " ABI: ", abi);
     
     }
  

@@ -28,6 +28,7 @@ contract CarbonFootPrint {
 
     mapping(string => bool) private ExistLot_RawMaterial;
     mapping(string => bool) private ExistLot_Product;
+   mapping(string => bool) private Exist_RawMaterial;
 
     address supplier;
     address transformer;
@@ -38,6 +39,8 @@ contract CarbonFootPrint {
         transformer = _transformer;
         customer = _customer;
     }
+
+   
 
     function AddRawMaterial(string memory _name, string memory _lot, uint256  _carbonfootprint, uint256  _amount) public {
         require (msg.sender == supplier , "Errore! Questa funzione deve essere chiamata solo dai fornitori");
@@ -53,11 +56,29 @@ contract CarbonFootPrint {
             residual_amount_RawMaterial: _amount });
 
         getRawMaterialByLot[_lot] = material;
-        getRawMaterialByName[_name] = material;
+
+        if(!Exist_RawMaterial[_name]){
+            getRawMaterialByName[_name].name_RawMaterial = _name;
+            getRawMaterialByName[_name].lot_RawMaterial = string(bytes.concat(bytes(getRawMaterialByName[_name].lot_RawMaterial), "-", bytes(_lot)));
+            getRawMaterialByName[_name].amount_RawMaterial += _amount;
+        }else{
+            getRawMaterialByName[_name] = material;
+        }
+
         ExistLot_RawMaterial[_lot] = true;
+        Exist_RawMaterial[_name] = true;
+       
     }
 
-    function prova () public view returns (address indirizzo, address indirizzo2, address indirizzo3) {
-        return (supplier, transformer, customer);
+    function SearchByLot(string memory _lot) public view returns (RawMaterial memory material){
+         require (ExistLot_RawMaterial[_lot], "Errore! Lotto non esistente");
+         return getRawMaterialByLot[_lot] ;
+    }
+
+    
+
+    function SearchByName(string memory _name) public view returns (RawMaterial memory material){
+        require (Exist_RawMaterial[_name] , "La materia prima non esiste");
+        return getRawMaterialByName[_name];
     }
 }
