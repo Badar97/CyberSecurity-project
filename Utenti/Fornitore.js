@@ -101,11 +101,11 @@ function add(answer) {
 
 	var myContract = new web3.eth.Contract(abi, contractAddress);
 
-	myContract.methods.AddRawMaterial(answer.nome, answer.lotto, answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
+	myContract.methods.AddRawMaterial(answer.nome.toUpperCase(), answer.lotto, answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
 		if (error) console.log('\n' + error);
 		else {
 			console.log("\nTRANSAZIONE ESEGUITA");
-			console.log('\nHAI INSERITO LA MATERIA PRIMA: ' + answer.nome + '\nLOTTO: ' + answer.lotto +'\nFOOTIPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);
+			console.log('\nHAI INSERITO LA MATERIA PRIMA: ' + answer.nome.toUpperCase() + '\nLOTTO: ' + answer.lotto +'\nFOOTIPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);
 		}
 		console.log("\n-----------------\n");
 		fornitore(myAccountAddress);
