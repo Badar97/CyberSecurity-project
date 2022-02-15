@@ -43,10 +43,10 @@ contract CarbonFootPrint {
    
 
     function AddRawMaterial(string memory _name, string memory _lot, uint256  _carbonfootprint, uint256  _amount) public {
-        require (msg.sender == supplier , "Errore! Questa funzione deve essere chiamata solo dai fornitori");
-        require (_amount > 0 , "Errore! Hai inserito un ammontare di materia prima minore o uguale di 0");
-        require (!ExistLot_RawMaterial[_lot], "Errore! Lotto gia' esistente");
-        require (_carbonfootprint >=0 , "Errore! CarbonFootPrint deve essere maggiore o uguale a 0");
+        if (msg.sender != supplier) revert("Questa funzione deve essere chiamata solo dai fornitori");
+        if (_amount <= 0) revert("Hai inserito un ammontare di materia prima minore o uguale di 0");
+        if (ExistLot_RawMaterial[_lot]) revert("Lotto gia' esistente");
+        if (_carbonfootprint < 0) revert("Il FOOTPRINT deve essere maggiore o uguale a 0");
 
         RawMaterial memory material = RawMaterial({
             name_RawMaterial: _name ,
@@ -57,7 +57,7 @@ contract CarbonFootPrint {
 
         getRawMaterialByLot[_lot] = material;
 
-        if(!Exist_RawMaterial[_name]){
+        if(Exist_RawMaterial[_name]){
             getRawMaterialByName[_name].name_RawMaterial = _name;
             getRawMaterialByName[_name].lot_RawMaterial = string(bytes.concat(bytes(getRawMaterialByName[_name].lot_RawMaterial), "-", bytes(_lot)));
             getRawMaterialByName[_name].amount_RawMaterial += _amount;
@@ -71,14 +71,12 @@ contract CarbonFootPrint {
     }
 
     function SearchByLot(string memory _lot) public view returns (RawMaterial memory material){
-         require (ExistLot_RawMaterial[_lot], "Errore! Lotto non esistente");
+         if (!ExistLot_RawMaterial[_lot]) revert("Lotto non esistente");
          return getRawMaterialByLot[_lot] ;
     }
 
-    
-
     function SearchByName(string memory _name) public view returns (RawMaterial memory material){
-        require (Exist_RawMaterial[_name] , "La materia prima non esiste");
+        if (!Exist_RawMaterial[_name]) revert("Nessun lotto contenente la matera prima");
         return getRawMaterialByName[_name];
     }
 }
