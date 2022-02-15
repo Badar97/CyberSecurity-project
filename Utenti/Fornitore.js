@@ -102,10 +102,10 @@ function add(answer) {
 	var myContract = new web3.eth.Contract(abi, contractAddress);
 
 	myContract.methods.AddRawMaterial(answer.nome.toUpperCase(), answer.lotto, answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
-		if (error) console.log('\n' + error);
+		if (error) console.log('\n' + error.toString().slice(43));
 		else {
 			console.log("\nTRANSAZIONE ESEGUITA");
-			console.log('\nHAI INSERITO LA MATERIA PRIMA: ' + answer.nome.toUpperCase() + '\nLOTTO: ' + answer.lotto +'\nFOOTIPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);
+			console.log('\nHAI INSERITO LA MATERIA PRIMA: ' + answer.nome.toUpperCase() + '\nLOTTO: ' + answer.lotto +'\nFOOTPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);
 		}
 		console.log("\n-----------------\n");
 		fornitore(myAccountAddress);
@@ -120,9 +120,9 @@ function search(lotto){
 	var myContract = new web3.eth.Contract(abi, contractAddress);
 	
 	myContract.methods.SearchByLot(lotto).call(function (error, response) { 
-		if (error) console.log('\n' + error);
+		if (error) console.log('\n' + error.toString().slice(43));
 		else { 
-		 	console.log('\nMATERIA PRIMA: ' + response.name_RawMaterial + '\nFOOTIPRINT: ' + response.carbonfootprint_RawMaterial +'\nQUANTITA\': ' + response.amount_RawMaterial);
+		 	console.log('\nMATERIA PRIMA: ' + response.name_RawMaterial + '\nFOOTPRINT: ' + response.carbonfootprint_RawMaterial +'\nQUANTITA\': ' + response.amount_RawMaterial);
 		} 
 		console.log("\n-----------------\n");
 		fornitore(myAccountAddress);
@@ -137,8 +137,8 @@ function search_name(nome){
 
 	var myContract = new web3.eth.Contract(abi, contractAddress);
 	
-	myContract.methods.SearchByName(nome).call(function (error, response) {
-		if (error) console.log('\n' + error);
+	myContract.methods.SearchByName(nome.toUpperCase()).call(function (error, response) {
+		if (error) console.log('\n' + error.toString().slice(43));
 		else { 
 		 	console.log('\nMATERIA PRIMA: ' + response.name_RawMaterial + '\nLOTTI: ' + response.lot_RawMaterial +'\nQUANTITA\': ' + response.amount_RawMaterial);
 		}

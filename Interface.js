@@ -20,7 +20,7 @@ inquirer.prompt(question).then((answer) => {
 		case question.choices[0]: fornitore.fornitore(wallets[0]); break;
 		case question.choices[1]: trasformatore.trasformatore(wallets[1]); break;
 		case question.choices[2]: cliente.cliente(wallets[2]); break;
-		default: return;
+		default: console.log('\n'); return;
 	}
 });
 

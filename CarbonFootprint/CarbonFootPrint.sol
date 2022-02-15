@@ -43,10 +43,10 @@ contract CarbonFootPrint {
    
 
     function AddRawMaterial(string memory _name, string memory _lot, uint256  _carbonfootprint, uint256  _amount) public {
-        if (msg.sender != supplier) revert("Questa funzione deve essere chiamata solo dai fornitori");
-        if (_amount <= 0) revert("Hai inserito un ammontare di materia prima minore o uguale di 0");
-        if (ExistLot_RawMaterial[_lot]) revert("Lotto gia' esistente");
-        if (_carbonfootprint < 0) revert("Il FOOTPRINT deve essere maggiore o uguale a 0");
+        if (msg.sender != supplier) revert("ERRORE - Questa funzione deve essere chiamata solo dai fornitori");
+        if (_amount <= 0) revert("ERRORE - Hai inserito un ammontare di materia prima minore o uguale di 0");
+        if (ExistLot_RawMaterial[_lot]) revert("ERRORE - Lotto gia' esistente");
+        if (_carbonfootprint < 0) revert("ERRORE - Il FOOTPRINT deve essere maggiore o uguale a 0");
 
         RawMaterial memory material = RawMaterial({
             name_RawMaterial: _name ,
@@ -59,7 +59,7 @@ contract CarbonFootPrint {
 
         if(Exist_RawMaterial[_name]){
             getRawMaterialByName[_name].name_RawMaterial = _name;
-            getRawMaterialByName[_name].lot_RawMaterial = string(bytes.concat(bytes(getRawMaterialByName[_name].lot_RawMaterial), "-", bytes(_lot)));
+            getRawMaterialByName[_name].lot_RawMaterial = string(bytes.concat(bytes(getRawMaterialByName[_name].lot_RawMaterial), ", ", bytes(_lot)));
             getRawMaterialByName[_name].amount_RawMaterial += _amount;
         }else{
             getRawMaterialByName[_name] = material;
@@ -71,12 +71,12 @@ contract CarbonFootPrint {
     }
 
     function SearchByLot(string memory _lot) public view returns (RawMaterial memory material){
-         if (!ExistLot_RawMaterial[_lot]) revert("Lotto non esistente");
+         if (!ExistLot_RawMaterial[_lot]) revert("ERRORE - Lotto non esistente");
          return getRawMaterialByLot[_lot] ;
     }
 
     function SearchByName(string memory _name) public view returns (RawMaterial memory material){
-        if (!Exist_RawMaterial[_name]) revert("Nessun lotto contenente la matera prima");
+        if (!Exist_RawMaterial[_name]) revert("ERRORE - Nessun lotto contenente la matera prima");
         return getRawMaterialByName[_name];
     }
 }
