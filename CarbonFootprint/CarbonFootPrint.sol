@@ -43,10 +43,10 @@ contract CarbonFootPrint {
    
 
     function AddRawMaterial(string memory _name, string memory _lot, uint256  _carbonfootprint, uint256  _amount) public {
-        if (msg.sender != supplier) revert("ERRORE - Questa funzione deve essere chiamata solo dai fornitori");
-        if (_amount <= 0) revert("ERRORE - Hai inserito un ammontare di materia prima minore o uguale di 0");
-        if (ExistLot_RawMaterial[_lot]) revert("ERRORE - Lotto gia' esistente");
-        if (_carbonfootprint < 0) revert("ERRORE - Il FOOTPRINT deve essere maggiore o uguale a 0");
+        require (msg.sender == supplier, "ERRORE - Questa funzione deve essere chiamata solo dai fornitori");
+        require (_amount > 0, "ERRORE - Hai inserito un ammontare di materia prima minore o uguale di 0");
+        require (!ExistLot_RawMaterial[_lot], "ERRORE - Lotto gia' esistente");
+        require (_carbonfootprint >= 0, "ERRORE - Il FOOTPRINT deve essere maggiore o uguale a 0");
 
         RawMaterial memory material = RawMaterial({
             name_RawMaterial: _name ,
@@ -71,12 +71,12 @@ contract CarbonFootPrint {
     }
 
     function SearchByLot(string memory _lot) public view returns (RawMaterial memory material){
-         if (!ExistLot_RawMaterial[_lot]) revert("ERRORE - Lotto non esistente");
+         require (ExistLot_RawMaterial[_lot], "ERRORE - Lotto non esistente");
          return getRawMaterialByLot[_lot] ;
     }
 
     function SearchByName(string memory _name) public view returns (RawMaterial memory material){
-        if (!Exist_RawMaterial[_name]) revert("ERRORE - Nessun lotto contenente la matera prima");
+        require (Exist_RawMaterial[_name], "ERRORE - Nessun lotto contenente questa materia prima");
         return getRawMaterialByName[_name];
     }
 }
