@@ -18,9 +18,8 @@ function fornitore(address) {
             message: 'MENU\' FORNITORE',
             choices: [
                 'INSERIMENTO DI MATERIE PRIME',
-				'RICERCA MATERIA PRIMA PER LOTTO',
-				'RICERCA MATERIA PRIMA PER NOME',
-				'TRASPORTO',
+				'RICERCA LOTTO',
+				'RICERCA MATERIA PRIMA',
                 'EXIT'
             ]
     }
@@ -28,10 +27,9 @@ function fornitore(address) {
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
             case question.choices[0]: Insert(); break;
-			case question.choices[1]: SearchByLot(); break;
-			case question.choices[2]: SearchByName(); break;
-			case question.choices[3]: Transport(); break;
-            case question.choices[4]: default: return;
+			case question.choices[1]: SearchInfoLot(); break;
+			case question.choices[2]: SearchLotsByRawMaterialName(); break;
+            case question.choices[3]: default: return;
         }
     });
 }
@@ -43,11 +41,6 @@ function Insert() {
 			name: 'nome',
 			message: 'INSERISCI IL NOME'
 		}, 
-		{
-			type: 'input',
-			name: 'lotto',
-			message: 'INSERISCI IL LOTTO'
-		},
 		{
 			type: 'input',
 			name: 'footprint',
@@ -92,7 +85,6 @@ function SearchByName(){
 		search_name(answer.nome);
 	});
 }
-	
 
 function add(answer) { 
 
@@ -101,11 +93,12 @@ function add(answer) {
 
 	var myContract = new web3.eth.Contract(abi, contractAddress);
 
-	myContract.methods.AddRawMaterial(answer.nome.toUpperCase(), answer.lotto, answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
+
+	myContract.methods.AddRawMaterial(answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
 		if (error) console.log('\n' + error.toString().slice(43));
 		else {
 			console.log("\nTRANSAZIONE ESEGUITA");
-			console.log('\nHAI INSERITO LA MATERIA PRIMA: ' + answer.nome.toUpperCase() + '\nLOTTO: ' + answer.lotto +'\nFOOTPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);
+			console.log('\nHAI INSERITO LA MATERIA PRIMA: ' + response.name_RawMaterial + '\nLOTTO: ' + response.id +'\nFOOTPRINT: ' + response.carbonfootprint_Lot +'\nQUANTITA\': ' + response.amount_Lot);
 		}
 		console.log("\n-----------------\n");
 		fornitore(myAccountAddress);
@@ -140,7 +133,7 @@ function search_name(nome){
 	myContract.methods.SearchByName(nome.toUpperCase()).call(function (error, response) {
 		if (error) console.log('\n' + error.toString().slice(43));
 		else { 
-		 	console.log('\nMATERIA PRIMA: ' + response.name_RawMaterial + '\nLOTTI: ' + response.lot_RawMaterial +'\nQUANTITA\': ' + response.amount_RawMaterial);
+		 	console.log('\nMATERIA PRIMA: ' + response.name_RawMaterial + '\nLOTTI: ' + response.lots_RawMaterial +'\nQUANTITA\': ' + response.amount_RawMaterial);
 		}
 		console.log("\n-----------------\n");
 		fornitore(myAccountAddress);

@@ -15,17 +15,42 @@ function trasformatore(address) {
             name: 'action',
             message: 'SELEZIONA UN\'OPERAZIONE',
             choices: [
-                'INSERIMENTO DI ...',
+                'RICHIESTA DI MATERIE PRIME',
                 'EXIT'
             ]
     }
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: console.log(question.choices[0]); break;
+            case question.choices[0]: Request(); break;
             case question.choices[1]: default: return;
         }
     });
+
+    function Request(){
+        var question = [
+            {
+                type: 'input',
+                name: 'nome',
+                message: 'INSERISCI LA MATERIA PRIMA CHE VUOI RICHIEDERE:'
+            }, 
+            {
+                type: 'input',
+                name: 'lotto',
+                message: 'INSERISCI IL LOTTO'
+            },	
+            {
+                type: 'input',
+                name: 'amount',
+                message: 'INSERISCI LA QUANTITA\''
+            }
+        ]
+
+	    inquirer.prompt(question).then((answer) => {
+		search(answer);
+	    });
+
+    }
 
 }
 
