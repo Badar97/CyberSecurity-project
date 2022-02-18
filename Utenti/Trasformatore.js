@@ -1,57 +1,136 @@
-const rl = require("readline-sync");
 const fs = require("fs");
 const inquirer = require('inquirer');
-const Web3 = require("web3");
 const mycontract = require("../mycontract.js");
 
-let web3 = new Web3('http://localhost:22001');
+const Web3 = require("web3");
+let web3 = new Web3('http://localhost:22000');
+
+const abi = mycontract.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
+const contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
+const myContract = new web3.eth.Contract(abi, contractAddress);
+
+var myAccountAddress = null;
 
 function trasformatore(address) {
 
-    console.log('HAI SELEZIONATO UN ACCOUNT TRASFORMATORE');
+	myAccountAddress = address;
 
     var question = {
             type: 'list',
             name: 'action',
-            message: 'SELEZIONA UN\'OPERAZIONE',
+            message: 'MENU\' FORNITORE',
             choices: [
-                'RICHIESTA DI MATERIE PRIME',
+                'INSERIMENTO DI MATERIE PRIME',
+				'RICERCA LOTTO',
+				'RICERCA MATERIA PRIMA',
                 'EXIT'
             ]
     }
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: Request(); break;
-            case question.choices[1]: default: return;
+            case question.choices[0]: add_lot(); break;
+			case question.choices[1]: search_lot(); break;
+			case question.choices[2]: search_name(); break;
+            case question.choices[3]: default: return;
         }
     });
-
-    function Request(){
-        var question = [
-            {
-                type: 'input',
-                name: 'nome',
-                message: 'INSERISCI LA MATERIA PRIMA CHE VUOI RICHIEDERE:'
-            }, 
-            {
-                type: 'input',
-                name: 'lotto',
-                message: 'INSERISCI IL LOTTO'
-            },	
-            {
-                type: 'input',
-                name: 'amount',
-                message: 'INSERISCI LA QUANTITA\''
-            }
-        ]
-
-	    inquirer.prompt(question).then((answer) => {
-		search(answer);
-	    });
-
-    }
-
 }
 
-exports.trasformatore = trasformatore;
+function add_lot() {
+	var question = [
+		{
+			type: 'input',
+			name: 'nome',
+			message: 'INSERISCI IL NOME'
+		}, 
+		{
+			type: 'input',
+			name: 'footprint',
+			message: 'INSERISCI IL FOOTPRINT'
+		},	
+		{
+			type: 'input',
+			name: 'amount',
+			message: 'INSERISCI LA QUANTITA\''
+		}
+	]
+
+	inquirer.prompt(question).then((answer) => {
+	   AddRawMaterial(answer);
+    });
+}
+
+function search_lot(){
+
+	var question = 
+		{
+			type: 'input',
+			name: 'lotto',
+			message: 'INSERISCI IL CODICE DI LOTTO: '
+		}
+
+	inquirer.prompt(question).then((answer) => {
+		SearchByLot(answer.lotto);
+	});
+}
+
+function search_name(){
+	
+	var question = 
+		{
+			type: 'input',
+			name: 'nome',
+			message: 'INSERISCI IL NOME DELLA MATERIA PRIMA: '
+		}
+	
+	inquirer.prompt(question).then((answer) => {
+		SearchByName(answer.nome);
+	});
+}
+
+function AddRawMaterial(answer) {
+	myContract.methods.getLastID().call(function(error, response){
+		if (error) console.log('\nERRORE DURANTE LA TRANSAZIONE');
+		else {
+			myContract.methods.AddRawMaterial(response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
+				if (error) {
+					console.log('\n' + error.toString().slice(43));
+				} else {
+					console.log('\nTRANSAZIONE ESEGUITA');
+					console.log('\nCODICE DEL LOTTO INSERITO: ' + response);
+				}
+				console.log("\n-----------------\n");
+				fornitore(myAccountAddress);
+			});
+		}
+	});
+}
+
+function SearchByLot(lot_id){
+	myContract.methods.SearchInfoLot(lot_id).call(function (error, response) { 
+		if (error) console.log('\n' + error.toString().slice(43));
+		else { 
+		 	console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint +'\nQUANTITA\': ' + response.amount);
+		} 
+		console.log("\n-----------------\n");
+		fornitore(myAccountAddress);
+	});
+				
+}
+
+function SearchByName(name){
+	myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
+		if (error) console.log('\n' + error.toString().slice(43));
+		else {
+			console.log('\nLOTTI DI ' + name.toUpperCase() + ':\n');
+			response.forEach(element => {
+				console.log('LOTTO ' + element.id + ' - ' + element.amount + ' UNITA\'');
+			});
+		}
+		console.log("\n-----------------\n");
+		fornitore(myAccountAddress);
+	});
+}
+
+exports.fornitore = fornitore;

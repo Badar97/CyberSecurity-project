@@ -1,10 +1,13 @@
-const rl = require("readline-sync");
 const fs = require("fs");
 const inquirer = require('inquirer');
-const Web3 = require("web3");
 const mycontract = require("../mycontract.js");
 
+const Web3 = require("web3");
 let web3 = new Web3('http://localhost:22000');
+
+const abi = mycontract.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
+const contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
+const myContract = new web3.eth.Contract(abi, contractAddress);
 
 var myAccountAddress = null;
 
@@ -26,15 +29,15 @@ function fornitore(address) {
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: Insert(); break;
-			case question.choices[1]: SearchInfoLot(); break;
-			case question.choices[2]: SearchLotsByRawMaterialName(); break;
+            case question.choices[0]: add_lot(); break;
+			case question.choices[1]: search_lot(); break;
+			case question.choices[2]: search_name(); break;
             case question.choices[3]: default: return;
         }
     });
 }
 
-function Insert() {
+function add_lot() {
 	var question = [
 		{
 			type: 'input',
@@ -54,11 +57,11 @@ function Insert() {
 	]
 
 	inquirer.prompt(question).then((answer) => {
-	   add(answer);
+	   AddRawMaterial(answer);
     });
 }
 
-function SearchByLot(){
+function search_lot(){
 
 	var question = 
 		{
@@ -68,11 +71,11 @@ function SearchByLot(){
 		}
 
 	inquirer.prompt(question).then((answer) => {
-		search(answer.lotto);
+		SearchByLot(answer.lotto);
 	});
 }
 
-function SearchByName(){
+function search_name(){
 	
 	var question = 
 		{
@@ -82,40 +85,33 @@ function SearchByName(){
 		}
 	
 	inquirer.prompt(question).then((answer) => {
-		search_name(answer.nome);
+		SearchByName(answer.nome);
 	});
 }
 
-function add(answer) { 
-
-	var abi = mycontract.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
-	var contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
-
-	var myContract = new web3.eth.Contract(abi, contractAddress);
-
-
-	myContract.methods.AddRawMaterial(answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
-		if (error) console.log('\n' + error.toString().slice(43));
+function AddRawMaterial(answer) {
+	myContract.methods.getLastID().call(function(error, response){
+		if (error) console.log('\nERRORE DURANTE LA TRANSAZIONE');
 		else {
-			console.log("\nTRANSAZIONE ESEGUITA");
-			console.log('\nHAI INSERITO LA MATERIA PRIMA: ' + response.name_RawMaterial + '\nLOTTO: ' + response.id +'\nFOOTPRINT: ' + response.carbonfootprint_Lot +'\nQUANTITA\': ' + response.amount_Lot);
+			myContract.methods.AddRawMaterial(response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
+				if (error) {
+					console.log('\n' + error.toString().slice(43));
+				} else {
+					console.log('\nTRANSAZIONE ESEGUITA');
+					console.log('\nCODICE DEL LOTTO INSERITO: ' + response);
+				}
+				console.log("\n-----------------\n");
+				fornitore(myAccountAddress);
+			});
 		}
-		console.log("\n-----------------\n");
-		fornitore(myAccountAddress);
-	});		
+	});
 }
 
-function search(lotto){
-
-	var abi = mycontract.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
-	var contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
-
-	var myContract = new web3.eth.Contract(abi, contractAddress);
-	
-	myContract.methods.SearchByLot(lotto).call(function (error, response) { 
+function SearchByLot(lot_id){
+	myContract.methods.SearchInfoLot(lot_id).call(function (error, response) { 
 		if (error) console.log('\n' + error.toString().slice(43));
 		else { 
-		 	console.log('\nMATERIA PRIMA: ' + response.name_RawMaterial + '\nFOOTPRINT: ' + response.carbonfootprint_RawMaterial +'\nQUANTITA\': ' + response.amount_RawMaterial);
+		 	console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint +'\nQUANTITA\': ' + response.amount);
 		} 
 		console.log("\n-----------------\n");
 		fornitore(myAccountAddress);
@@ -123,22 +119,18 @@ function search(lotto){
 				
 }
 
-function search_name(nome){
-	
-	var abi = mycontract.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
-	var contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
-
-	var myContract = new web3.eth.Contract(abi, contractAddress);
-	
-	myContract.methods.SearchByName(nome.toUpperCase()).call(function (error, response) {
+function SearchByName(name){
+	myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
 		if (error) console.log('\n' + error.toString().slice(43));
-		else { 
-		 	console.log('\nMATERIA PRIMA: ' + response.name_RawMaterial + '\nLOTTI: ' + response.lots_RawMaterial +'\nQUANTITA\': ' + response.amount_RawMaterial);
+		else {
+			console.log('\nLOTTI DI ' + name.toUpperCase() + ':\n');
+			response.forEach(element => {
+				console.log('LOTTO ' + element.id + ' - ' + element.amount + ' UNITA\'');
+			});
 		}
 		console.log("\n-----------------\n");
 		fornitore(myAccountAddress);
 	});
-
 }
 
 exports.fornitore = fornitore;
