@@ -1,6 +1,6 @@
 const Web3 = require("web3");
 const fs = require("fs");
-const mycontract = require("./mycontract.js");
+const compiler = require("./compiler.js");
 
 let web3 = new Web3('http://localhost:22000');
 let web3_2 = new Web3('http://localhost:22001');
@@ -23,44 +23,23 @@ web3.eth.getAccounts().then((value) => {
 	});
 });
 
-var abi = null;
-var bytecode = null;
-var contractAddress = null;
-
 function deploy(address) {
 
-	console.log("Used account: " + address);
+	console.log("\nACCOUNT USATO: " + address);
 
-	var values = mycontract.compile("CarbonFootprint/CarbonFootprint.sol"); 
-	abi = values[0];
-	bytecode = values[1];
+	var values = compiler.compile("CarbonFootprint/CarbonFootprint.sol"); 
+	var abi = values[0];
+	var bytecode = values[1];
 
 	var wallets = JSON.parse(fs.readFileSync('wallets.json'));
 
 	var simpleContract = new web3.eth.Contract(abi);
 
-	simpleContract.deploy({ data: "0x" + bytecode, arguments: wallets}).
-		send({ from: address, gas: 1500000, gasPrice: '0' }, deploy_handler).
-		on('receipt', receipt_handler); 
+	simpleContract.deploy({ data: "0x" + bytecode, arguments: wallets}).send({ from: address }).then(function(newContractInstance){
+		console.log('\nDEPLOY COMPLETO');
+		console.log('\nINDIRIZZO DELLO SMART CONTRACT: ' + newContractInstance.options.address);
+		fs.writeFileSync('CarbonFootprint/address.json', '[\n"' + newContractInstance.options.address + '"\n]');
+	});
 
-	console.log("Simple contract deploying ...");
-
-}
-
-async function deploy_handler(e, transactionHash) {
-	console.log("Submitted transaction with hash: ", transactionHash);
-	if (e) {
-		console.log("Error creating contract", e);
-	}
-} 
-
-function receipt_handler(receipt) {
-	try {
-		fs.writeFileSync('CarbonFootprint/address.json', '[\n"' + receipt.contractAddress + '"\n]');
-		contractAddress = receipt.contractAddress;
-		console.log("Contract mined: " + receipt.contractAddress);
-		console.log(receipt);
-	} catch (err) {
-		console.error("Error handling receipt: ", err);
-	}
+	return;
 }

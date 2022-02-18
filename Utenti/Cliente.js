@@ -1,9 +1,8 @@
-const rl = require("readline-sync");
 const fs = require("fs");
 const inquirer = require('inquirer');
-const Web3 = require("web3");
-const mycontract = require("../mycontract.js");
+const compiler = require("../compiler.js");
 
+const Web3 = require("web3");
 let web3 = new Web3('http://localhost:22002');
 
 function cliente(address) {
@@ -15,7 +14,7 @@ function cliente(address) {
             name: 'action',
             message: 'SELEZIONA UN\'OPERAZIONE',
             choices: [
-                'INSERIMENTO DI ...',
+                '...',
                 'EXIT'
             ]
     }
