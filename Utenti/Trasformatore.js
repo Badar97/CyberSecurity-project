@@ -111,10 +111,12 @@ function CheckMyLots() {
 			console.log();
 			var table = [];
 			response.forEach(element => {
-				var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
+				var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
 				table.push(new_row);
 			});
-			printTable(table);
+            if (table.length == 0) {
+                console.log('NESSUN LOTTO ACQUISTATO');
+            } else printTable(table);
 		}
 		console.log();
 		trasformatore(myAccountAddress);

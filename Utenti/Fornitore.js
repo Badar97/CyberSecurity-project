@@ -145,7 +145,9 @@ function SearchByName(name) {
                     table.push(new_row);
                 }
 			});
-			printTable(table);
+			if (table.length == 0) {
+                console.log('NESSUN LOTTO DISPONIBILE');
+            } else printTable(table);
 		}
 		console.log();
 		fornitore(myAccountAddress);
