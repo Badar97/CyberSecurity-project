@@ -1,6 +1,9 @@
 const fs = require("fs");
 const inquirer = require('inquirer');
+const { printTable } = require('console-table-printer');
 const compiler = require("../compiler.js");
+
+const Interface = require('../Interface.js');
 
 const Web3 = require("web3");
 let web3 = new Web3('http://localhost:22000');
@@ -23,6 +26,7 @@ function fornitore(address) {
 			'INSERIMENTO DI MATERIE PRIME',
 			'RICERCA MATERIA PRIMA',
 			'RICERCA LOTTO',
+			'BACK',
 			'EXIT'
 		]
 	};
@@ -32,51 +36,83 @@ function fornitore(address) {
             case question.choices[0]: add_lot(); break;
 			case question.choices[1]: search_name(); break;
 			case question.choices[2]: search_lot(); break;
-            case question.choices[3]: default: return;
+			case question.choices[3]: Interface.interface(); break;
+            case question.choices[4]: default: return;
         }
     });
 }
 
 function add_lot() {
 	var question = [
-		{ type: 'input', name: 'nome', message: 'MATERIA PRIMA' }, 
-		{ type: 'input', name: 'footprint', message: 'FOOTPRINT' },	
-		{ type: 'input', name: 'amount', message: 'QUANTITA\''}
+		{ 
+			type: 'input', 
+			name: 'nome', 
+			message: 'MATERIA PRIMA' 
+		}, 
+		{ 
+			type: 'input', 
+			name: 'footprint', 
+			message: 'FOOTPRINT', 
+			validate: (answer) => {
+				if (isNaN(parseInt(answer))) return 'ERRORE - FOOTPRINT DEVE ESSERE UN NUMERO INTERO';
+				else if (answer < 0) return 'ERRORE - FOOTPRINT NON PUO\' AVERE UN VALORE NEGATIVO'
+				return true;
+			} 
+		},	
+		{ 
+			type: 'input', 
+			name: 'amount', 
+			message: 'QUANTITA\'',
+			validate: (answer) => {
+				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
+				else if (answer <= 0) return 'ERRORE - QUANTINTA\' DEVE ESSERE MAGGIORE DI 0'
+				return true;
+			}
+		}
 	];
 
 	inquirer.prompt(question).then((answer) => {
-	if (isNaN(parseInt(answer.footprint)) || isNaN(parseInt(answer.amount))){
-		console.log('\nERRORE: FOOTPRINT E QUANTITA\' DEVONO ESSERE INTERI\n');
-		add_lot();
-	}else{
-	   AddRawMaterial(answer); }
-    });
+		var question2 = [
+			{ 
+				type: 'confirm', 
+				name: 'confirm', 
+				message: '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint + '\nQUANTITA\': ' + answer.amount + '\n\nSEI SICURO DI VOLER INSERIRE QUESTO LOTTO?'
+			}
+		];
+		inquirer.prompt(question2).then((answer2) => {
+			if (answer2.confirm) AddRawMaterial(answer);
+			else fornitore();
+		});
+	});
 }
 
 function search_name() {
-
 	var question = [
-		{ type: 'input', name: 'nome', message: 'INSERISCI IL NOME DELLA MATERIA PRIMA: ' }
+		{ 
+			type: 'input', 
+			name: 'nome', 
+			message: 'INSERISCI IL NOME DELLA MATERIA PRIMA: ' 
+		}
 	];
-	
 	inquirer.prompt(question).then((answer) => {
 		SearchByName(answer.nome);
 	});
 }
 
 function search_lot() {
-
 	var question = [
-		{ type: 'input', name: 'lotto', message: 'INSERISCI IL CODICE DI LOTTO: ' }
+		{ 
+			type: 'input', 
+			name: 'lotto', 
+			message: 'INSERISCI IL CODICE DI LOTTO: ',
+			validate: (answer) => {
+				if (isNaN(parseInt(answer))) return 'ERRORE - CODICE LOTTO NON VALIDO';
+				else return true;
+			} 
+		}
 	]
-
 	inquirer.prompt(question).then((answer) => {
-		if (isNaN(parseInt(answer))){
-			console.log('\nERRORE: ID LOTTO NON VALIDO\n');
-			search_lot();
-	} else {
 		SearchByLot(answer.lotto); 
-	}
 	});
 }
 
@@ -84,16 +120,13 @@ function AddRawMaterial(answer) {
 	myContract.methods.getLastID().call(function(error, response){
 		if (error) console.log('\nERRORE DURANTE LA TRANSAZIONE');
 		else {
-			
-			myContract.methods.AddRawMaterial(response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
-				if (error) {
-					console.log('\n' + error.toString().slice(43));
-				} else {
+			myContract.methods.AddRawMaterial(myAccountAddress, response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
+				if (error) console.log('\n' + error.toString().slice(43));
+				else {
 					console.log('\nTRANSAZIONE ESEGUITA');
-					console.log('\nCODICE DEL LOTTO INSERITO: ' + response);
 					console.log('\nLOTTO: ' + response + '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' +answer.footprint +'\nQUANTITA\': ' + answer.amount);
 				}
-				console.log("\n-----------------\n");
+				console.log();
 				fornitore(myAccountAddress);
 			});
 		}
@@ -104,12 +137,15 @@ function SearchByName(name) {
 	myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
 		if (error) console.log('\n' + error.toString().slice(43));
 		else {
-			console.log('\nLOTTI DI ' + name.toUpperCase() + ':\n');
+			console.log();
+			var table = [];
 			response.forEach(element => {
-				console.log('LOTTO ' + element.id + ' - ' + element.amount + ' UNITA\'');
+				var new_row = { LOTTO: element.id, QUANTITA: element.amount };
+				table.push(new_row);
 			});
+			printTable(table);
 		}
-		console.log("\n-----------------\n");
+		console.log();
 		fornitore(myAccountAddress);
 	});
 }
@@ -117,13 +153,10 @@ function SearchByName(name) {
 function SearchByLot(lot_id) {
 	myContract.methods.SearchInfoLot(lot_id).call(function (error, response) { 
 		if (error) console.log('\n' + error.toString().slice(43));
-		else { 
-		 	console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint +'\nQUANTITA\': ' + response.amount);
-		} 
-		console.log("\n-----------------\n");
+		else console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint + '\nQUANTITA\': ' + response.amount + '\nVENDUTO: ' + response.sold);
+		console.log();
 		fornitore(myAccountAddress);
-	});
-				
+	});		
 }
 
 exports.fornitore = fornitore;

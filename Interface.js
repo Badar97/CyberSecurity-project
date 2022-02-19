@@ -7,20 +7,24 @@ const Cliente = require('./Utenti/Cliente.js');
 
 const wallets = JSON.parse(fs.readFileSync('wallets.json'));
 
-var question = {
-		type: 'list',
-		name: 'wallet',
-		message: 'SELEZIONA UN WALLET',
-		choices: [...wallets, ...['EXIT']]
+interface();
+
+function interface() {
+	var question = {
+			type: 'list',
+			name: 'wallet',
+			message: 'SELEZIONA UN WALLET',
+			choices: [...wallets, ...['EXIT']]
+	}
+
+	inquirer.prompt(question).then((answer) => {
+		switch(answer.wallet) {
+			case question.choices[0]: Fornitore.fornitore(wallets[0]); break;
+			case question.choices[1]: Trasformatore.trasformatore(wallets[1]); break;
+			case question.choices[2]: Cliente.cliente(wallets[2]); break;
+			default: console.log('\n'); return;
+		}
+	});
 }
 
-inquirer.prompt(question).then((answer) => {
-    switch(answer.wallet) {
-		case question.choices[0]: Fornitore.fornitore(wallets[0]); break;
-		case question.choices[1]: Trasformatore.trasformatore(wallets[1]); break;
-		case question.choices[2]: Cliente.cliente(wallets[2]); break;
-		default: console.log('\n'); return;
-	}
-});
-
-return;
+exports.interface = interface;

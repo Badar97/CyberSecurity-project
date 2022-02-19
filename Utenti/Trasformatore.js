@@ -1,9 +1,12 @@
 const fs = require("fs");
 const inquirer = require('inquirer');
+const { printTable } = require('console-table-printer');
 const compiler = require("../compiler.js");
 
+const Interface = require('../Interface.js');
+
 const Web3 = require("web3");
-let web3 = new Web3('http://localhost:22000');
+let web3 = new Web3('http://localhost:22001');
 
 const abi = compiler.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
 const contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
@@ -20,32 +23,96 @@ function trasformatore(address) {
             name: 'action',
             message: 'MENU\' TRASFORMATORE',
             choices: [
-                'RICHIESTA MATERIE PRIME',
+                'ACQUISTO MATERIE PRIME',
+                'VISUALIZZA LOTTI ACQUISTATI',
+                'INSERIMENTO PRODOTTI',
+                'BACK',
                 'EXIT'
             ]
     }
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: request_material(); break;
-            case question.choices[1]: default: return;
+            case question.choices[0]: purchase_material(); break;
+            case question.choices[1]: CheckMyLots(); break;
+            case question.choices[2]: add_product(); break;
+            case question.choices[3]: Interface.interface(); break;
+            case question.choices[4]: default: return;
         }
     });
 }
 
-function request_material() {
-	
+function purchase_material() {
     var question = [
-		{
-			type: 'input',
-			name: 'nome',
-			message: 'INSERISCI IL NOME DELLA MATERIA PRIMA: '
-		}
-	]
-
+		{ 
+            type: 'input', 
+            name: 'nome', 
+            message: 'QUALE MATERIA PRIMA VUOI ACQUISTARE? '
+        }
+	];
 	inquirer.prompt(question).then((answer) => {
-	   AddRawMaterial(answer);
+        PurchaseLot(answer.nome);
     });
+}
+
+function PurchaseLot(name) {
+	myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
+		if (error) {
+            console.log('\n' + error.toString().slice(43) + '\n');
+		    trasformatore(myAccountAddress);
+        } else {
+            console.log('\nLOTTI DI ' + name.toUpperCase() + '\n');
+			var table = [];
+            var id = [];
+			response.forEach(element => {
+                id.push(element.id);
+				var new_row = { LOTTO: element.id, QUANTITA: element.amount };
+				table.push(new_row);
+			});
+            printTable(table);
+            console.log();
+            var question = [
+                {
+                    type: 'checkbox',
+                    name: 'lotti',
+                    message: '\nSELEZIONA I LOTTI CHE VUOI ACQUISTARE',
+                    choices: id
+                }
+            ]
+            inquirer.prompt(question).then((answer) => {
+                if (answer.lotti.length == 0) {
+                    console.log('\nTRANSAZIONE ANNULLATA');
+                    console.log();
+                    trasformatore(myAccountAddress);
+                } else {
+                console.log(answer.lotti);
+                    myContract.methods.PurchaseLot(myAccountAddress, answer.lotti).send({from: myAccountAddress}, function(error) {
+                        if (error) console.log('\n' + error.toString().slice(43));
+                        else console.log('\nTRANSAZIONE ESEGUITA');
+                        console.log();
+                        trasformatore(myAccountAddress);
+                    });
+                }
+            });
+		}
+	});
+}
+
+function CheckMyLots() {
+    myContract.methods.CheckMyLots(myAccountAddress).call(function(error, response) {
+        if (error) console.log('\n' + error.toString().slice(43));
+		else {
+			console.log();
+			var table = [];
+			response.forEach(element => {
+				var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
+				table.push(new_row);
+			});
+			printTable(table);
+		}
+		console.log();
+		trasformatore(myAccountAddress);
+    })
 }
 
 exports.trasformatore = trasformatore;
