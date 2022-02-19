@@ -153,7 +153,7 @@ function SearchByName(name) {
 function SearchByLot(lot_id) {
 	myContract.methods.SearchInfoLot(lot_id).call(function (error, response) { 
 		if (error) console.log('\n' + error.toString().slice(43));
-		else console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint + '\nQUANTITA\': ' + response.amount + '\nVENDUTO: ' + response.sold);
+		else console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint + '\nQUANTITA\': ' + response.amount);
 		console.log();
 		fornitore(myAccountAddress);
 	});		
