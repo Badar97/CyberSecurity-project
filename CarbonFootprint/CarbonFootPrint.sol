@@ -11,7 +11,6 @@ contract CarbonFootPrint {
         uint256 carbonfootprint;
         uint256 amount;
         uint256 residual_amount;
-        bool sold;
     }
 
     // PRODOTTI INSERITI DAL TRASFORMATORE E ACQUISTATI DAL CLIENTE
@@ -67,8 +66,7 @@ contract CarbonFootPrint {
             name: _name,
             carbonfootprint: _carbonfootprint, 
             amount: _amount,
-            residual_amount: _amount,
-            sold: false
+            residual_amount: _amount
         });
 
         getLotByID[new_lot.id] = new_lot;
@@ -92,7 +90,6 @@ contract CarbonFootPrint {
     function PurchaseLot(address _add, uint256[] memory _id) public {
         require (_add == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         for(uint i = 0; i < _id.length; i++) {
-            getLotByID[_id[i]].sold = true;
             getLotByTransfromerAddress[_add].push(SearchInfoLot(_id[i]));
         }
     }
