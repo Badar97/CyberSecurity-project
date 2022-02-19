@@ -61,39 +61,45 @@ function PurchaseLot(name) {
             console.log('\n' + error.toString().slice(43) + '\n');
 		    trasformatore(myAccountAddress);
         } else {
-            console.log('\nLOTTI DI ' + name.toUpperCase() + '\n');
 			var table = [];
             var id = [];
 			response.forEach(element => {
-                id.push(element.id);
-				var new_row = { LOTTO: element.id, QUANTITA: element.amount };
-				table.push(new_row);
-			});
-            printTable(table);
-            console.log();
-            var question = [
-                {
-                    type: 'checkbox',
-                    name: 'lotti',
-                    message: '\nSELEZIONA I LOTTI CHE VUOI ACQUISTARE',
-                    choices: id
+                if (!element.sold) {
+                    var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
+                    id.push(element.id);
+                    table.push(new_row);
                 }
-            ]
-            inquirer.prompt(question).then((answer) => {
-                if (answer.lotti.length == 0) {
-                    console.log('\nTRANSAZIONE ANNULLATA');
-                    console.log();
-                    trasformatore(myAccountAddress);
-                } else {
-                console.log(answer.lotti);
-                    myContract.methods.PurchaseLot(myAccountAddress, answer.lotti).send({from: myAccountAddress}, function(error) {
-                        if (error) console.log('\n' + error.toString().slice(43));
-                        else console.log('\nTRANSAZIONE ESEGUITA');
+			});
+            if (table.length == 0) {
+                console.log('\nNESSUN LOTTO DISPONIBILE\n');
+                trasformatore(myAccountAddress);
+            } else {
+                console.log('\nLOTTI DI ' + name.toUpperCase() + '\n');
+                printTable(table);
+                console.log();
+                var question = [
+                    {
+                        type: 'checkbox',
+                        name: 'lotti',
+                        message: '\nSELEZIONA I LOTTI CHE VUOI ACQUISTARE',
+                        choices: id
+                    }
+                ]
+                inquirer.prompt(question).then((answer) => {
+                    if (answer.lotti.length == 0) {
+                        console.log('\nTRANSAZIONE ANNULLATA');
                         console.log();
                         trasformatore(myAccountAddress);
-                    });
-                }
-            });
+                    } else {
+                        myContract.methods.PurchaseLot(answer.lotti).send({from: myAccountAddress}, function(error) {
+                            if (error) console.log('\n' + error.toString().slice(43));
+                            else console.log('\nTRANSAZIONE ESEGUITA');
+                            console.log();
+                            trasformatore(myAccountAddress);
+                        });
+                    }
+                });
+            }
 		}
 	});
 }

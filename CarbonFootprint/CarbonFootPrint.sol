@@ -11,6 +11,7 @@ contract CarbonFootPrint {
         uint256 carbonfootprint;
         uint256 amount;
         uint256 residual_amount;
+        bool sold;
     }
 
     // PRODOTTI INSERITI DAL TRASFORMATORE E ACQUISTATI DAL CLIENTE
@@ -56,8 +57,8 @@ contract CarbonFootPrint {
     function getLastID() public view returns (uint256 id) {
         return id_lot;
     }
-    function AddRawMaterial(address _add, uint256 id, string memory _name, uint256  _carbonfootprint, uint256  _amount) public {
-        require (_add == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
+    function AddRawMaterial(uint256 id, string memory _name, uint256  _carbonfootprint, uint256  _amount) public {
+        require (msg.sender == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
 
         id_lot++;
 
@@ -66,7 +67,8 @@ contract CarbonFootPrint {
             name: _name,
             carbonfootprint: _carbonfootprint, 
             amount: _amount,
-            residual_amount: _amount
+            residual_amount: _amount,
+            sold: false
         });
 
         getLotByID[new_lot.id] = new_lot;
@@ -77,20 +79,25 @@ contract CarbonFootPrint {
     }
 
     function SearchInfoLot(uint256 _lot) public view returns (Lot memory material) {
-         require (ExistLot[_lot], "ERRORE - LOTTO NON ESISTENTE");
+         require (ExistLot[_lot], "LOTTO NON ESISTENTE");
          return getLotByID[_lot] ;
     }
 
     function SearchLotsByRawMaterialName(string memory _name) public view returns (Lot[] memory lot) {
-        require (ExistRawMaterial[_name], "ERRORE - NESSUN LOTTO CONTIENE QUESTA MATERIA PRIMA");
+        require (ExistRawMaterial[_name], "NESSUN LOTTO CONTIENE QUESTA MATERIA PRIMA");
         return getLotByRawMaterialName[_name];
     }
 
     // ACQUISTO LOTTO (TRASFORMATORE)
-    function PurchaseLot(address _add, uint256[] memory _id) public {
-        require (_add == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
-        for(uint i = 0; i < _id.length; i++) {
-            getLotByTransfromerAddress[_add].push(SearchInfoLot(_id[i]));
+    function PurchaseLot(uint256[] memory _id) public {
+        require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
+        for (uint i = 0; i < _id.length; i++) {
+            getLotByID[_id[i]].sold = true;
+            getLotByTransfromerAddress[msg.sender].push(getLotByID[_id[i]]);
+            for (uint j = 0; j < getLotByRawMaterialName[getLotByID[_id[i]].name].length; j++) {
+                if (getLotByRawMaterialName[getLotByID[_id[i]].name][j].id == _id[i])
+                    getLotByRawMaterialName[getLotByID[_id[i]].name][j].sold = true;
+            }
         }
     }
 

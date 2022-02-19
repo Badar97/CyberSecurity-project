@@ -120,7 +120,7 @@ function AddRawMaterial(answer) {
 	myContract.methods.getLastID().call(function(error, response){
 		if (error) console.log('\nERRORE DURANTE LA TRANSAZIONE');
 		else {
-			myContract.methods.AddRawMaterial(myAccountAddress, response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
+			myContract.methods.AddRawMaterial(response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
 				if (error) console.log('\n' + error.toString().slice(43));
 				else {
 					console.log('\nTRANSAZIONE ESEGUITA');
@@ -140,8 +140,10 @@ function SearchByName(name) {
 			console.log();
 			var table = [];
 			response.forEach(element => {
-				var new_row = { LOTTO: element.id, QUANTITA: element.amount };
-				table.push(new_row);
+				if (!element.sold) {
+                    var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
+                    table.push(new_row);
+                }
 			});
 			printTable(table);
 		}
@@ -153,7 +155,7 @@ function SearchByName(name) {
 function SearchByLot(lot_id) {
 	myContract.methods.SearchInfoLot(lot_id).call(function (error, response) { 
 		if (error) console.log('\n' + error.toString().slice(43));
-		else console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint + '\nQUANTITA\': ' + response.amount);
+		else console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint + '\nQUANTITA\': ' + response.amount + '\nVENDUTO: ' + response.sold);
 		console.log();
 		fornitore(myAccountAddress);
 	});		
