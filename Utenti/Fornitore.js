@@ -38,7 +38,6 @@ function fornitore(address) {
 }
 
 function add_lot() {
-
 	var question = [
 		{ type: 'input', name: 'nome', message: 'MATERIA PRIMA' }, 
 		{ type: 'input', name: 'footprint', message: 'FOOTPRINT' },	
@@ -46,7 +45,11 @@ function add_lot() {
 	];
 
 	inquirer.prompt(question).then((answer) => {
-	   AddRawMaterial(answer);
+	if (isNaN(parseInt(answer.footprint)) || isNaN(parseInt(answer.amount))){
+		console.log('\nERRORE: FOOTPRINT E QUANTITA\' DEVONO ESSERE INTERI\n');
+		add_lot();
+	}else{
+	   AddRawMaterial(answer); }
     });
 }
 
@@ -68,7 +71,12 @@ function search_lot() {
 	]
 
 	inquirer.prompt(question).then((answer) => {
-		SearchByLot(answer.lotto);
+		if (isNaN(parseInt(answer))){
+			console.log('\nERRORE: ID LOTTO NON VALIDO\n');
+			search_lot();
+	} else {
+		SearchByLot(answer.lotto); 
+	}
 	});
 }
 
@@ -76,12 +84,14 @@ function AddRawMaterial(answer) {
 	myContract.methods.getLastID().call(function(error, response){
 		if (error) console.log('\nERRORE DURANTE LA TRANSAZIONE');
 		else {
+			
 			myContract.methods.AddRawMaterial(response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
 				if (error) {
 					console.log('\n' + error.toString().slice(43));
 				} else {
 					console.log('\nTRANSAZIONE ESEGUITA');
 					console.log('\nCODICE DEL LOTTO INSERITO: ' + response);
+					console.log('\nLOTTO: ' + response + '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' +answer.footprint +'\nQUANTITA\': ' + answer.amount);
 				}
 				console.log("\n-----------------\n");
 				fornitore(myAccountAddress);

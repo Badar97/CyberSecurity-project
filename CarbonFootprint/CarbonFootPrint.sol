@@ -6,19 +6,19 @@ contract CarbonFootPrint {
 
     struct Lot{
         uint256 id;
-        uint256 carbonfootprint;
-        uint256 amount;
+        int256 carbonfootprint;
+        int256 amount;
         string name;
         bool sold;
     }
 
      struct Product{
         string name_Product;
-        uint32[] carbonfootprint_Product;
+        int32[] carbonfootprint_Product;
         string lot_Product;
-        uint256 carbonfootprintTot_Product;
-        uint256 amount_Product;
-        uint256 residual_amount_Product;
+        int256 carbonfootprintTot_Product;
+        int256 amount_Product;
+        int256 residual_amount_Product;
     }
 
     mapping(uint256 => Lot) private getLotByID;
@@ -49,7 +49,7 @@ contract CarbonFootPrint {
         return id_lot;
     }
 
-    function AddRawMaterial(uint256 id, string memory _name, uint256  _carbonfootprint, uint256  _amount) public {
+    function AddRawMaterial(uint256 id, string memory _name, int256  _carbonfootprint, int256  _amount) public {
         require (msg.sender == supplier, "ERRORE - Questa funzione deve essere chiamata solo dai fornitori");
         require (_amount > 0, "ERRORE - Hai inserito un ammontare di materia prima minore o uguale di 0");
         require (_carbonfootprint >= 0, "ERRORE - Il FOOTPRINT deve essere maggiore o uguale a 0");
