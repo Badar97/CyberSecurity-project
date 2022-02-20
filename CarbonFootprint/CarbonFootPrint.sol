@@ -6,29 +6,29 @@ contract CarbonFootPrint {
 
     // LOTTI INSERITI DAL FORNITORE E ACQUISTATI DL TRASFORMATORE
     struct Lot {
-        uint256 id;
+        uint id;
         string name;
-        uint256 carbonfootprint;
-        uint256 amount;
-        uint256 residual_amount;
+        uint carbonfootprint;
+        uint amount;
+        uint residual_amount;
         bool sold;
     }
 
     // PRODOTTI INSERITI DAL TRASFORMATORE E ACQUISTATI DAL CLIENTE
     struct Product {
         string name;
-        uint256[] carbonfootprints;
-        uint256[] lots;
-        int256 carbonfootprintTot_Product;
-        int256 amount_Product;
-        int256 residual_amount_Product;
+        uint[] carbonfootprints;
+        uint[] lots;
+        uint total_carbonfootprint;
+        uint amount;
+        uint residual_amount;
     }
 
     // MEMORIZZAZIONE LOTTI PER ID E PER MATERIA PRIMA
-    mapping(uint256 => Lot) private getLotByID;
+    mapping(uint => Lot) private getLotByID;
     mapping(string => Lot[]) private getLotByRawMaterialName;
 
-    mapping(uint256 => bool) private ExistLot;
+    mapping(uint => bool) private ExistLot;
     mapping(string => bool) private ExistRawMaterial;
 
     // MEMORIZZAZIONE LOTTI PER PROPRIETARIO (TRASFORMATORE)
@@ -57,7 +57,7 @@ contract CarbonFootPrint {
     function getLastID() public view returns (uint256 id) {
         return id_lot;
     }
-    function AddRawMaterial(uint256 id, string memory _name, uint256  _carbonfootprint, uint256  _amount) public {
+    function AddRawMaterial(uint id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
         require (msg.sender == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
 
         id_lot++;
@@ -78,7 +78,7 @@ contract CarbonFootPrint {
         ExistRawMaterial[_name] = true;
     }
 
-    function SearchInfoLot(uint256 _lot) public view returns (Lot memory material) {
+    function SearchInfoLot(uint _lot) public view returns (Lot memory material) {
          require (ExistLot[_lot], "LOTTO NON ESISTENTE");
          return getLotByID[_lot] ;
     }
@@ -89,15 +89,15 @@ contract CarbonFootPrint {
     }
 
     // ACQUISTO LOTTO (TRASFORMATORE)
-    function PurchaseLot(uint256[] memory _id) public {
+    function PurchaseLot(uint[] memory _id) public {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         for (uint i = 0; i < _id.length; i++) {
             getLotByID[_id[i]].sold = true;
-            getLotByTransfromerAddress[msg.sender].push(getLotByID[_id[i]]);
             for (uint j = 0; j < getLotByRawMaterialName[getLotByID[_id[i]].name].length; j++) {
                 if (getLotByRawMaterialName[getLotByID[_id[i]].name][j].id == _id[i])
                     getLotByRawMaterialName[getLotByID[_id[i]].name][j].sold = true;
             }
+            getLotByTransfromerAddress[msg.sender].push(getLotByID[_id[i]]);
         }
     }
 
