@@ -57,13 +57,13 @@ contract CarbonFootPrint {
     function getLastID() public view returns (uint256 id) {
         return id_lot;
     }
-    function AddRawMaterial(uint id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
+    function AddRawMaterial(uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
         require (msg.sender == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
 
         id_lot++;
 
         Lot memory new_lot = Lot({
-            id: id,
+            id: _id,
             name: _name,
             carbonfootprint: _carbonfootprint, 
             amount: _amount,
