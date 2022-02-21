@@ -55,6 +55,42 @@ function purchase_material() {
     });
 }
 
+function add_product(){
+    var question = [
+		{ 
+			type: 'input', 
+			name: 'nome', 
+			message: 'NOME PRODOTTO' 
+		}, 	
+		{ 
+			type: 'input', 
+			name: 'amount', 
+			message: 'QUANTITA\'',
+			validate: (answer) => {
+				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
+				else if (answer <= 0) return 'ERRORE - QUANTINTA\' DEVE ESSERE MAGGIORE DI 0'
+				return true;
+			}
+		}
+	];
+
+    
+
+	inquirer.prompt(question).then((answer) => {
+		var question2 = [
+			{ 
+				type: 'confirm', 
+				name: 'confirm', 
+				message: '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint + '\nQUANTITA\': ' + answer.amount + '\n\nSEI SICURO DI VOLER INSERIRE QUESTO LOTTO?'
+			}
+		];
+		inquirer.prompt(question2).then((answer2) => {
+			if (answer2.confirm) AddRawMaterial(answer);
+			else fornitore();
+		});
+	});
+}
+
 function PurchaseLot(name) {
 	myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
 		if (error) {

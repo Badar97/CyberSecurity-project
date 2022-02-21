@@ -33,7 +33,7 @@ function fornitore(address) {
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: add_lot(); break;
+            case question.choices[0]: add_raw_material(); break;
 			case question.choices[1]: search_name(); break;
 			case question.choices[2]: search_lot(); break;
 			case question.choices[3]: Interface.interface(); break;
@@ -42,7 +42,7 @@ function fornitore(address) {
     });
 }
 
-function add_lot() {
+function add_raw_material() {
 	var question = [
 		{ 
 			type: 'input', 

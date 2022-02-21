@@ -24,11 +24,6 @@ contract CarbonFootPrint {
     // MEMORIZZAZIONE LOTTI PER PROPRIETARIO (TRASFORMATORE)
     mapping(address => uint[]) private getLotByTransfromerAddress;
 
-    mapping(string => Product) private getProductsByName;
-    mapping(string => Product) private getProductsByLot;
-    mapping(string => bool) private ExistLot_Product;
-
-
     // COSTRUTTORE
     address supplier;
     address transformer;
@@ -43,12 +38,18 @@ contract CarbonFootPrint {
         id_lot = 0;
     }
 
-    // INSERIMENTO NUOVO LOTTO (FORNITORE)
+    // INSERIMENTO NUOVA MATERIA PRIMA (FORNITORE)
+    function AddRawMaterial (uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
+        require (msg.sender == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
+
+        AddLot(_id, _name, _carbonfootprint, _amount);
+    }
+
+    // INSERIMENTO NUOVO LOTTO (FORNITORE-TRASFORMATORE)
     function getLastID() public view returns (uint256 id) {
         return id_lot;
-    }
-    function AddRawMaterial(uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
-        require (msg.sender == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
+    }  
+    function AddLot(uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
 
         id_lot = _id+1;
 
@@ -107,6 +108,7 @@ contract CarbonFootPrint {
         return temp;
     }
 
+    //INSERIMENTO NUOVO PRODOTTO (TRASFORMATORE)
     function AddProduct(uint _id, string memory _name, uint[][] memory _lot_amount_usedXelement, uint  _amount) public {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
 
@@ -115,24 +117,17 @@ contract CarbonFootPrint {
         /*MATRICE _lot_amountXelement
         Ogni colonna corrisponde ad un lotto
         Nella prima riga sono memorizzati gli ID
-        Nella seconda riga sono memorizzate le quantità totali dei lotti*/
+        Nella seconda riga sono memorizzate le quantità usate dei lotti*/
 
-        for(uint256 i = 0; i < _lot_amountXelement[][i].length; i++){ 
-            Lot elem = getLotByID[_lot_amount_usedXelement[0][i]];
+        for(uint256 i = 0; i < _lot_amount_usedXelement[0].length; i++){ 
+            Lot memory elem = getLotByID[_lot_amount_usedXelement[0][i]];
             uint256 elem_carbonfootprint_lot = elem.carbonfootprint;
             uint256 elem_amount_tot = elem.amount;
             uint256 elem_amount_used = _lot_amount_usedXelement[1][i];
             _total_carbonfootprint += (elem_carbonfootprint_lot/elem_amount_tot*elem_amount_used);
         }
 
-        Lot memory new_product = Lot({
-            id: _id,
-            name: _name,
-            total_carbonfootprint: _total_carbonfootprint,
-            amount: _amount,
-            residual_amount: _amount,
-            sold: false
-        });
+        AddLot(_id, _name, _total_carbonfootprint, _amount);
     }
 }
 
