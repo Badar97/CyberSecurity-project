@@ -66,7 +66,7 @@ function PurchaseLot(name) {
 			response.forEach(element => {
                 if (!element.sold) {
                     var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
-                    id.push(element.id);
+                    id.push(element.id); //per checkbox
                     table.push(new_row);
                 }
 			});

@@ -16,6 +16,7 @@ contract CarbonFootPrint {
 
     // PRODOTTI INSERITI DAL TRASFORMATORE E ACQUISTATI DAL CLIENTE
     struct Product {
+        uint id;
         string name;
         uint[] carbonfootprints;
         uint[] lots;
@@ -88,7 +89,7 @@ contract CarbonFootPrint {
         return getLotByRawMaterialName[_name];
     }
 
-    // ACQUISTO LOTTO (TRASFORMATORE)
+    // ACQUISTO UNO O PIU' LOTTI (TRASFORMATORE)
     function PurchaseLot(uint[] memory _id) public {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         for (uint i = 0; i < _id.length; i++) {
