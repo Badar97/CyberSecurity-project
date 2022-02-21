@@ -34,7 +34,7 @@ function trasformatore(address) {
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
             case question.choices[0]: purchase_material(); break;
-            case question.choices[1]: CheckMyLots(); break;
+            case question.choices[1]: check_lots(); break;
             case question.choices[2]: add_product(); break;
             case question.choices[3]: Interface.interface(); break;
             case question.choices[4]: default: return;
@@ -55,6 +55,11 @@ function purchase_material() {
     });
 }
 
+async function check_lots() {
+    let result = await CheckMyLots();
+    console.log(result);
+}
+
 function add_product(){
     var question = [
 		{ 
@@ -73,6 +78,17 @@ function add_product(){
 			}
 		}
 	];
+
+    console.log('\nLOTTI DI TUA PROPRIETA\'');
+
+    var question2 = [
+        { 
+			type: 'input', 
+			name: 'nome', 
+			message: 'MATERIE PRIME UTILIZZATE PER REALIZZARE IL PRODOTTO CHE SI STA INSERENDO' 
+		}
+    ]
+
 
     
 
@@ -139,9 +155,15 @@ function PurchaseLot(name) {
 		}
 	});
 }
+  
+function check_lots() {
+    CheckMyLots().then((response) => {
+        console.log(response);
+    });
+}
 
-function CheckMyLots() {
-    myContract.methods.CheckMyLots(myAccountAddress).call(function(error, response) {
+async function CheckMyLots() {
+    await myContract.methods.CheckMyLots(myAccountAddress).call(function(error, response) {
         if (error) console.log('\n' + error.toString().slice(43));
 		else {
 			console.log();
@@ -155,8 +177,9 @@ function CheckMyLots() {
             } else printTable(table);
 		}
 		console.log();
-		trasformatore(myAccountAddress);
     })
+    var response = 5;
+    return response;
 }
 
 exports.trasformatore = trasformatore;
