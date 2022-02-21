@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 contract CarbonFootPrint {
 
-    // LOTTI INSERITI DAL FORNITORE E ACQUISTATI DL TRASFORMATORE
+    // LOTTI DI MATERIE PRIME E DI PRODOTTI
     struct Lot {
         uint id;
         string name;
@@ -12,17 +12,6 @@ contract CarbonFootPrint {
         uint amount;
         uint residual_amount;
         bool sold;
-    }
-
-    // PRODOTTI INSERITI DAL TRASFORMATORE E ACQUISTATI DAL CLIENTE
-    struct Product {
-        uint id;
-        string name;
-        uint[] carbonfootprints;
-        uint[] lots;
-        uint total_carbonfootprint;
-        uint amount;
-        uint residual_amount;
     }
 
     // MEMORIZZAZIONE LOTTI PER ID E PER MATERIA PRIMA
@@ -61,7 +50,7 @@ contract CarbonFootPrint {
     function AddRawMaterial(uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
         require (msg.sender == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
 
-        id_lot++;
+        id_lot = _id+1;
 
         Lot memory new_lot = Lot({
             id: _id,
@@ -117,4 +106,33 @@ contract CarbonFootPrint {
         }
         return temp;
     }
+
+    function AddProduct(uint _id, string memory _name, uint[][] memory _lot_amount_usedXelement, uint  _amount) public {
+        require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
+
+        uint256 _total_carbonfootprint = 0;
+
+        /*MATRICE _lot_amountXelement
+        Ogni colonna corrisponde ad un lotto
+        Nella prima riga sono memorizzati gli ID
+        Nella seconda riga sono memorizzate le quantità totali dei lotti*/
+
+        for(uint256 i = 0; i < _lot_amountXelement[][i].length; i++){ 
+            Lot elem = getLotByID[_lot_amount_usedXelement[0][i]];
+            uint256 elem_carbonfootprint_lot = elem.carbonfootprint;
+            uint256 elem_amount_tot = elem.amount;
+            uint256 elem_amount_used = _lot_amount_usedXelement[1][i];
+            _total_carbonfootprint += (elem_carbonfootprint_lot/elem_amount_tot*elem_amount_used);
+        }
+
+        Lot memory new_product = Lot({
+            id: _id,
+            name: _name,
+            total_carbonfootprint: _total_carbonfootprint,
+            amount: _amount,
+            residual_amount: _amount,
+            sold: false
+        });
+    }
 }
+
