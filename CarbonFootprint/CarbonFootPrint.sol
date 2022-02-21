@@ -27,13 +27,13 @@ contract CarbonFootPrint {
 
     // MEMORIZZAZIONE LOTTI PER ID E PER MATERIA PRIMA
     mapping(uint => Lot) private getLotByID;
-    mapping(string => Lot[]) private getLotByRawMaterialName;
+    mapping(string => uint[]) private getLotByRawMaterialName;
 
     mapping(uint => bool) private ExistLot;
     mapping(string => bool) private ExistRawMaterial;
 
     // MEMORIZZAZIONE LOTTI PER PROPRIETARIO (TRASFORMATORE)
-    mapping(address => Lot[]) private getLotByTransfromerAddress;
+    mapping(address => uint[]) private getLotByTransfromerAddress;
 
     mapping(string => Product) private getProductsByName;
     mapping(string => Product) private getProductsByLot;
@@ -73,7 +73,7 @@ contract CarbonFootPrint {
         });
 
         getLotByID[new_lot.id] = new_lot;
-        getLotByRawMaterialName[_name].push(new_lot);
+        getLotByRawMaterialName[_name].push(_id);
         
         ExistLot[new_lot.id] = true;
         ExistRawMaterial[_name] = true;
@@ -86,7 +86,11 @@ contract CarbonFootPrint {
 
     function SearchLotsByRawMaterialName(string memory _name) public view returns (Lot[] memory lot) {
         require (ExistRawMaterial[_name], "NESSUN LOTTO CONTIENE QUESTA MATERIA PRIMA");
-        return getLotByRawMaterialName[_name];
+        Lot[] memory temp;
+        for (uint i = 0; i < getLotByRawMaterialName[_name].length; i++) {
+            temp[i] = getLotByID[i];
+        }
+        return temp;
     }
 
     // ACQUISTO UNO O PIU' LOTTI (TRASFORMATORE)
@@ -94,16 +98,21 @@ contract CarbonFootPrint {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         for (uint i = 0; i < _id.length; i++) {
             getLotByID[_id[i]].sold = true;
+            /*
             for (uint j = 0; j < getLotByRawMaterialName[getLotByID[_id[i]].name].length; j++) {
                 if (getLotByRawMaterialName[getLotByID[_id[i]].name][j].id == _id[i])
                     getLotByRawMaterialName[getLotByID[_id[i]].name][j].sold = true;
-            }
-            getLotByTransfromerAddress[msg.sender].push(getLotByID[_id[i]]);
+            } */
+            getLotByTransfromerAddress[msg.sender].push(_id[i]);
         }
     }
 
     function CheckMyLots(address _add) public view returns (Lot[] memory lot) {
         require (_add == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
-        return getLotByTransfromerAddress[_add];
+        Lot[] memory temp;
+        for (uint i = 0; i < getLotByTransfromerAddress[_add].length; i++) {
+            temp[i] = getLotByID[i];
+        }
+        return temp;
     }
 }
