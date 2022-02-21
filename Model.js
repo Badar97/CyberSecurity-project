@@ -3,15 +3,20 @@ const compiler = require("./compiler.js");
 
 const Web3 = require("web3");
 let web3 = new Web3('http://localhost:22000');
+let web3_2 = new Web3('http://localhost:22001');
+let web3_3 = new Web3('http://localhost:22002');
 
 const abi = compiler.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
 const contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
-const myContract = new web3.eth.Contract(abi, contractAddress);
+const myContract1 = new web3.eth.Contract(abi, contractAddress);
+const myContract2 = new web3_2.eth.Contract(abi, contractAddress);
+const myContract3 = new web3_3.eth.Contract(abi, contractAddress);
 
+//MODEL FORNITORE
 async function GetLastID() {
 	var result = [];
 	try {
-		await myContract.methods.getLastID().call(function(error, response){
+		await myContract1.methods.getLastID().call(function(error, response){
 			if (error) result = [1, error];
 			else result = [0, response];
 		});
@@ -22,7 +27,7 @@ async function GetLastID() {
 async function AddRawMaterial(last_id, answer, myAccountAddress) {
 	var result = [];
 	try {
-		await myContract.methods.AddRawMaterial(last_id, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
+		await myContract1.methods.AddRawMaterial(last_id, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
 			if (error) result = [1, error];
 			else result = [0, null];
 		});
@@ -33,7 +38,7 @@ async function AddRawMaterial(last_id, answer, myAccountAddress) {
 async function SearchByName(name) {
 	var result = [];
 	try {
-		await myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
+		await myContract1.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
 			if (error) result = [1, error];
 			else result = [0, response];
 		});
@@ -44,7 +49,7 @@ async function SearchByName(name) {
 async function SearchByLot(lot_id) {
 	var result = [];
 	try {
-		await myContract.methods.SearchInfoLot(lot_id).call(function (error, response) { 
+		await myContract1.methods.SearchInfoLot(lot_id).call(function (error, response) { 
 			if (error) result = [1, error];
 			else result = [0, response];
 		});
@@ -52,12 +57,15 @@ async function SearchByLot(lot_id) {
 	return result;	
 }
 
+//MODEL TRASFORMATORE
+
 async function CheckMyLots(myAccountAddress) {
 	var result = [];
 	try {
-		await myContract.methods.CheckMyLots(myAccountAddress).call(function(error, response) {
+		await myContract2.methods.CheckMyLots(myAccountAddress).call(function(error, response) {
 			if (error) result = [1, error];
 			else result = [0, response];
+
 		});
 	} catch (error) {}
     return result;
@@ -66,13 +74,15 @@ async function CheckMyLots(myAccountAddress) {
 async function PurchaseLot(ids, myAccountAddress) {
 	var result = [];
 	try {
-		await myContract.methods.PurchaseLot(ids).send({from: myAccountAddress}, function(error) {
+		await myContract2.methods.PurchaseLot(ids).send({from: myAccountAddress}, function(error) {
 			if (error) result = [1, error];
-			else result = [0, response];
+			else result = [0, null];
 		});
 	} catch (error) {}
     return result;
 }
+
+
 
 exports.GetLastID = GetLastID;
 exports.AddRawMaterial = AddRawMaterial;

@@ -55,30 +55,74 @@ function purchase_material() {
         Model.SearchByName(answer.nome).then((result) => {
 			if (result[0]) console.log('\n' + result[1].toString().slice(43));
 			else {
-				console.log();
 				var table = [];
-				result[1].forEach(element => {
-					if (!element.sold) {
-						var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
-						table.push(new_row);
-					}
-				});
-				if (table.length == 0) {
-					console.log('NESSUN LOTTO DISPONIBILE');
-				} else printTable(table);
-			}
-			console.log();
-			fornitore(myAccountAddress);
-		})
+                var id = [];
+                result[1].forEach(element => {
+                    if (!element.sold) {
+                        var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
+                        id.push(element.id); //per checkbox
+                        table.push(new_row);
+                    }
+                });
+                if (table.length == 0) {
+                    console.log('\nNESSUN LOTTO DISPONIBILE\n');
+                    trasformatore(myAccountAddress);
+                } else {
+                    console.log('\nLOTTI DI ' + answer.nome.toUpperCase() + '\n');
+                    printTable(table);
+                    console.log();
+                    var question = [
+                        {
+                            type: 'checkbox',
+                            name: 'lotti',
+                            message: '\nSELEZIONA I LOTTI CHE VUOI ACQUISTARE',
+                            choices: id
+                        }
+                    ]
+                    inquirer.prompt(question).then((answer) => {
+                        if (answer.lotti.length == 0) {
+                            console.log('\nTRANSAZIONE ANNULLATA');
+                            console.log();
+                            trasformatore(myAccountAddress);
+                        } else {
+                            Model.PurchaseLot(answer.lotti, myAccountAddress).then((result) => {
+                                if (result[0]) {
+                                    console.log('\n' + result[1].toString()/*.slice(43)*/);
+                                }
+                                else console.log('\nTRANSAZIONE ESEGUITA');
+                                console.log();
+                                trasformatore(myAccountAddress);
+                            });
+                        }
+                    });
+                }
+            }
+		});
+
+    });		
+}
+
+function check_lots() {
+    
+    Model.CheckMyLots(myAccountAddress).then((result)=>{
+        if (result[0]) console.log('\n' + result[1].toString().slice(43));
+		else {
+            console.log();
+			var table = [];
+			result[1].forEach(element => {
+				var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
+				table.push(new_row);
+			});
+            if (table.length == 0) {
+                console.log('NESSUN LOTTO ACQUISTATO');
+            } else printTable(table);
+		}
+		console.log();
+		trasformatore(myAccountAddress);
     });
 }
 
-async function check_lots() {
-    let result = await CheckMyLots();
-    console.log(result);
-}
-
-function add_product(){
+/*function add_product(){
     var question = [
 		{ 
 			type: 'input', 
@@ -123,61 +167,6 @@ function add_product(){
 			else fornitore();
 		});
 	});
-}
-
-function PurchaseLot(name) {
-	myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
-		if (error) {
-            console.log('\n' + error.toString().slice(43) + '\n');
-		    trasformatore(myAccountAddress);
-        } else {
-			var table = [];
-            var id = [];
-			response.forEach(element => {
-                if (!element.sold) {
-                    var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
-                    id.push(element.id); //per checkbox
-                    table.push(new_row);
-                }
-			});
-            if (table.length == 0) {
-                console.log('\nNESSUN LOTTO DISPONIBILE\n');
-                trasformatore(myAccountAddress);
-            } else {
-                console.log('\nLOTTI DI ' + name.toUpperCase() + '\n');
-                printTable(table);
-                console.log();
-                var question = [
-                    {
-                        type: 'checkbox',
-                        name: 'lotti',
-                        message: '\nSELEZIONA I LOTTI CHE VUOI ACQUISTARE',
-                        choices: id
-                    }
-                ]
-                inquirer.prompt(question).then((answer) => {
-                    if (answer.lotti.length == 0) {
-                        console.log('\nTRANSAZIONE ANNULLATA');
-                        console.log();
-                        trasformatore(myAccountAddress);
-                    } else {
-                        myContract.methods.PurchaseLot(answer.lotti).send({from: myAccountAddress}, function(error) {
-                            if (error) console.log('\n' + error.toString().slice(43));
-                            else console.log('\nTRANSAZIONE ESEGUITA');
-                            console.log();
-                            trasformatore(myAccountAddress);
-                        });
-                    }
-                });
-            }
-		}
-	});
-}
-  
-function check_lots() {
-    Model.CheckMyLots().then((response) => {
-        console.log(response);
-    });
-}
+}*/
 
 exports.trasformatore = trasformatore;
