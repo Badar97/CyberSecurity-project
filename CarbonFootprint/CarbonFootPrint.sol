@@ -74,7 +74,7 @@ contract CarbonFootPrint {
 
         getLotByID[new_lot.id] = new_lot;
         getLotByRawMaterialName[_name].push(_id);
-        
+
         ExistLot[new_lot.id] = true;
         ExistRawMaterial[_name] = true;
     }
@@ -86,9 +86,10 @@ contract CarbonFootPrint {
 
     function SearchLotsByRawMaterialName(string memory _name) public view returns (Lot[] memory lot) {
         require (ExistRawMaterial[_name], "NESSUN LOTTO CONTIENE QUESTA MATERIA PRIMA");
-        Lot[] memory temp;
-        for (uint i = 0; i < getLotByRawMaterialName[_name].length; i++) {
-            temp[i] = getLotByID[i];
+        uint256 size = getLotByRawMaterialName[_name].length;
+        Lot[] memory temp = new Lot[](size);
+        for (uint i = 0; i < size; i++) {
+            temp[i] = getLotByID[getLotByRawMaterialName[_name][i]];
         }
         return temp;
     }
@@ -109,8 +110,9 @@ contract CarbonFootPrint {
 
     function CheckMyLots(address _add) public view returns (Lot[] memory lot) {
         require (_add == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
-        Lot[] memory temp;
-        for (uint i = 0; i < getLotByTransfromerAddress[_add].length; i++) {
+        uint256 size = getLotByTransfromerAddress[_add].length;
+        Lot[] memory temp = new Lot[](size);
+        for (uint i = 0; i < size ; i++) {
             temp[i] = getLotByID[i];
         }
         return temp;
