@@ -41,7 +41,6 @@ contract CarbonFootPrint {
     // INSERIMENTO NUOVA MATERIA PRIMA (FORNITORE)
     function AddRawMaterial (uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
         require (msg.sender == supplier, "ERRORE - SOLO I FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
-
         AddLot(_id, _name, _carbonfootprint, _amount);
     }
 
@@ -51,7 +50,7 @@ contract CarbonFootPrint {
     }  
     function AddLot(uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
 
-        id_lot = _id+1;
+        id_lot = _id + 1;
 
         Lot memory new_lot = Lot({
             id: _id,
@@ -76,7 +75,7 @@ contract CarbonFootPrint {
 
     function SearchLotsByRawMaterialName(string memory _name) public view returns (Lot[] memory lot) {
         require (ExistRawMaterial[_name], "NESSUN LOTTO CONTIENE QUESTA MATERIA PRIMA");
-        uint256 size = getLotByRawMaterialName[_name].length;
+        uint size = getLotByRawMaterialName[_name].length;
         Lot[] memory temp = new Lot[](size);
         for (uint i = 0; i < size; i++) {
             temp[i] = getLotByID[getLotByRawMaterialName[_name][i]];
@@ -89,18 +88,13 @@ contract CarbonFootPrint {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         for (uint i = 0; i < _id.length; i++) {
             getLotByID[_id[i]].sold = true;
-            /*
-            for (uint j = 0; j < getLotByRawMaterialName[getLotByID[_id[i]].name].length; j++) {
-                if (getLotByRawMaterialName[getLotByID[_id[i]].name][j].id == _id[i])
-                    getLotByRawMaterialName[getLotByID[_id[i]].name][j].sold = true;
-            } */
             getLotByTransfromerAddress[msg.sender].push(_id[i]);
         }
     }
 
     function CheckMyLots(address _add) public view returns (Lot[] memory lot) {
         require (_add == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
-        uint256 size = getLotByTransfromerAddress[_add].length;
+        uint size = getLotByTransfromerAddress[_add].length;
         Lot[] memory temp = new Lot[](size);
         for (uint i = 0; i < size ; i++) {
             temp[i] = getLotByID[i];

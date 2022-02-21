@@ -4,6 +4,7 @@ const { printTable } = require('console-table-printer');
 const compiler = require("../compiler.js");
 
 const Interface = require('../Interface.js');
+const Model = require('../Model.js');
 
 const Web3 = require("web3");
 let web3 = new Web3('http://localhost:22000');
@@ -80,8 +81,26 @@ function add_raw_material() {
 			}
 		];
 		inquirer.prompt(question2).then((answer2) => {
-			if (answer2.confirm) AddRawMaterial(answer);
-			else fornitore();
+			if (answer2.confirm) {
+				Model.GetLastID().then((last_id) => {
+					if(last_id[0]) console.log('\nERRORE DURANTE LA TRANSAZIONE');
+					else {
+						Model.AddRawMaterial(last_id[1], answer, myAccountAddress).then((result) => {
+							if (result[0]) console.log('\n' + result[1].toString().slice(43));
+							else {
+								console.log('\nTRANSAZIONE ESEGUITA');
+								console.log('\nLOTTO: ' + last_id[1] + '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);
+							}
+							console.log();
+							fornitore(myAccountAddress);
+						});
+					}
+				});
+			}
+			else {
+				console.log('\nTRANSAZIONE ANNULLATA\n');
+				fornitore(myAccountAddress);
+			}
 		});
 	});
 }
@@ -95,7 +114,24 @@ function search_name() {
 		}
 	];
 	inquirer.prompt(question).then((answer) => {
-		SearchByName(answer.nome);
+		Model.SearchByName(answer.nome).then((result) => {
+			if (result[0]) console.log('\n' + result[1].toString().slice(43));
+			else {
+				console.log();
+				var table = [];
+				result[1].forEach(element => {
+					if (!element.sold) {
+						var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
+						table.push(new_row);
+					}
+				});
+				if (table.length == 0) {
+					console.log('NESSUN LOTTO DISPONIBILE');
+				} else printTable(table);
+			}
+			console.log();
+			fornitore(myAccountAddress);
+		})
 	});
 }
 
@@ -112,55 +148,14 @@ function search_lot() {
 		}
 	]
 	inquirer.prompt(question).then((answer) => {
-		SearchByLot(answer.lotto); 
-	});
-}
-
-function AddRawMaterial(answer) {
-	myContract.methods.getLastID().call(function(error, response){
-		if (error) console.log('\nERRORE DURANTE LA TRANSAZIONE');
-		else {
-			myContract.methods.AddRawMaterial(response, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}, function(error){
-				if (error) console.log('\n' + error.toString().slice(43));
-				else {
-					console.log('\nTRANSAZIONE ESEGUITA');
-					console.log('\nLOTTO: ' + response + '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' +answer.footprint +'\nQUANTITA\': ' + answer.amount);
-				}
-				console.log();
-				fornitore(myAccountAddress);
-			});
-		}
-	});
-}
-
-function SearchByName(name) {
-	myContract.methods.SearchLotsByRawMaterialName(name.toUpperCase()).call(function (error, response) {
-		if (error) console.log('\n' + error.toString().slice(43));
-		else {
+		Model.SearchByLot(answer.lotto).then((result) => {
+			if (result[0]) console.log('\n' + result[1].toString().slice(43));
+			else console.log('\nLOTTO: ' + result[1].id + '\nMATERIA PRIMA: ' + result[1].name + '\nFOOTPRINT: ' + result[1].carbonfootprint + '\nQUANTITA\': ' + result[1].amount + '\nVENDUTO: ' + result[1].sold);
 			console.log();
-			var table = [];
-			response.forEach(element => {
-				if (!element.sold) {
-                    var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
-                    table.push(new_row);
-                }
-			});
-			if (table.length == 0) {
-                console.log('NESSUN LOTTO DISPONIBILE');
-            } else printTable(table);
-		}
-		console.log();
-		fornitore(myAccountAddress);
+			fornitore(myAccountAddress);
+		});
+		
 	});
-}
-
-function SearchByLot(lot_id) {
-	myContract.methods.SearchInfoLot(lot_id).call(function (error, response) { 
-		if (error) console.log('\n' + error.toString().slice(43));
-		else console.log('\nLOTTO: ' + response.id + '\nMATERIA PRIMA: ' + response.name + '\nFOOTPRINT: ' + response.carbonfootprint + '\nQUANTITA\': ' + response.amount + '\nVENDUTO: ' + response.sold);
-		console.log();
-		fornitore(myAccountAddress);
-	});		
 }
 
 exports.fornitore = fornitore;

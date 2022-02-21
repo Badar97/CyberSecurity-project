@@ -4,6 +4,7 @@ const { printTable } = require('console-table-printer');
 const compiler = require("../compiler.js");
 
 const Interface = require('../Interface.js');
+const Model = require('../Model.js');
 
 const Web3 = require("web3");
 let web3 = new Web3('http://localhost:22001');
@@ -51,7 +52,24 @@ function purchase_material() {
         }
 	];
 	inquirer.prompt(question).then((answer) => {
-        PurchaseLot(answer.nome);
+        Model.SearchByName(answer.nome).then((result) => {
+			if (result[0]) console.log('\n' + result[1].toString().slice(43));
+			else {
+				console.log();
+				var table = [];
+				result[1].forEach(element => {
+					if (!element.sold) {
+						var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
+						table.push(new_row);
+					}
+				});
+				if (table.length == 0) {
+					console.log('NESSUN LOTTO DISPONIBILE');
+				} else printTable(table);
+			}
+			console.log();
+			fornitore(myAccountAddress);
+		})
     });
 }
 
@@ -157,29 +175,9 @@ function PurchaseLot(name) {
 }
   
 function check_lots() {
-    CheckMyLots().then((response) => {
+    Model.CheckMyLots().then((response) => {
         console.log(response);
     });
-}
-
-async function CheckMyLots() {
-    await myContract.methods.CheckMyLots(myAccountAddress).call(function(error, response) {
-        if (error) console.log('\n' + error.toString().slice(43));
-		else {
-			console.log();
-			var table = [];
-			response.forEach(element => {
-				var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
-				table.push(new_row);
-			});
-            if (table.length == 0) {
-                console.log('NESSUN LOTTO ACQUISTATO');
-            } else printTable(table);
-		}
-		console.log();
-    })
-    var response = 5;
-    return response;
 }
 
 exports.trasformatore = trasformatore;
