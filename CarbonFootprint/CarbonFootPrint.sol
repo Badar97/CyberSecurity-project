@@ -97,7 +97,7 @@ contract CarbonFootPrint {
         uint size = getLotByTransfromerAddress[_add].length;
         Lot[] memory temp = new Lot[](size);
         for (uint i = 0; i < size ; i++) {
-            temp[i] = getLotByID[i];
+            temp[i] = getLotByID[getLotByTransfromerAddress[_add][i]];
         }
         return temp;
     }
