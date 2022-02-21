@@ -1,17 +1,7 @@
-const fs = require("fs");
 const inquirer = require('inquirer');
-const { printTable } = require('console-table-printer');
-const compiler = require("../compiler.js");
-
+const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Model.js');
-
-const Web3 = require("web3");
-let web3 = new Web3('http://localhost:22000');
-
-const abi = compiler.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
-const contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
-const myContract = new web3.eth.Contract(abi, contractAddress);
 
 var myAccountAddress = null;
 
@@ -127,7 +117,7 @@ function search_name() {
 				});
 				if (table.length == 0) {
 					console.log('NESSUN LOTTO DISPONIBILE');
-				} else printTable(table);
+				} else table_printer.printTable(table);
 			}
 			console.log();
 			fornitore(myAccountAddress);
@@ -150,7 +140,11 @@ function search_lot() {
 	inquirer.prompt(question).then((answer) => {
 		Model.SearchByLot(answer.lotto).then((result) => {
 			if (result[0]) console.log('\n' + result[1].toString().slice(43));
-			else console.log('\nLOTTO: ' + result[1].id + '\nMATERIA PRIMA: ' + result[1].name + '\nFOOTPRINT: ' + result[1].carbonfootprint + '\nQUANTITA\': ' + result[1].amount + '\nVENDUTO: ' + result[1].sold);
+			else {
+				console.log();
+				var table = [{ LOTTO: result[1].id, MATERIA: result[1].name, FOOTPRINT: result[1].carbonfootprint, QUANTITA: result[1].amount, RESIDUO: result[1].residual_amount, VENDUTO: result[1].sold }];
+				table_printer.printTable(table);
+			}
 			console.log();
 			fornitore(myAccountAddress);
 		});

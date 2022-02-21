@@ -1,10 +1,8 @@
 const fs = require("fs");
 const inquirer = require('inquirer');
-
 const Fornitore = require('./Utenti/Fornitore.js');
 const Trasformatore = require('./Utenti/Trasformatore.js');
 const Cliente = require('./Utenti/Cliente.js');
-
 const wallets = JSON.parse(fs.readFileSync('wallets.json'));
 
 interface();
@@ -16,7 +14,6 @@ function interface() {
 			message: 'SELEZIONA UN WALLET',
 			choices: [...wallets, ...['EXIT']]
 	}
-
 	inquirer.prompt(question).then((answer) => {
 		switch(answer.wallet) {
 			case question.choices[0]: Fornitore.fornitore(wallets[0]); break;

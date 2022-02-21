@@ -1,11 +1,9 @@
 const fs = require("fs");
 const compiler = require("./compiler.js");
-
 const Web3 = require("web3");
 let web3 = new Web3('http://localhost:22000');
 let web3_2 = new Web3('http://localhost:22001');
 let web3_3 = new Web3('http://localhost:22002');
-
 const abi = compiler.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
 const contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
 const myContract1 = new web3.eth.Contract(abi, contractAddress);

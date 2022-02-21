@@ -1,17 +1,7 @@
-const fs = require("fs");
 const inquirer = require('inquirer');
-const { printTable } = require('console-table-printer');
-const compiler = require("../compiler.js");
-
+const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Model.js');
-
-const Web3 = require("web3");
-let web3 = new Web3('http://localhost:22001');
-
-const abi = compiler.compile("CarbonFootprint/CarbonFootprint.sol")[0]; 
-const contractAddress = JSON.parse(fs.readFileSync('CarbonFootprint/address.json'))[0];
-const myContract = new web3.eth.Contract(abi, contractAddress);
 
 var myAccountAddress = null;
 
@@ -60,7 +50,7 @@ function purchase_material() {
                 result[1].forEach(element => {
                     if (!element.sold) {
                         var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
-                        id.push(element.id); //per checkbox
+                        id.push(element.id);
                         table.push(new_row);
                     }
                 });
@@ -69,7 +59,7 @@ function purchase_material() {
                     trasformatore(myAccountAddress);
                 } else {
                     console.log('\nLOTTI DI ' + answer.nome.toUpperCase() + '\n');
-                    printTable(table);
+                    table_printer.printTable(table);
                     console.log();
                     var question = [
                         {
@@ -115,7 +105,7 @@ function check_lots() {
 			});
             if (table.length == 0) {
                 console.log('NESSUN LOTTO ACQUISTATO');
-            } else printTable(table);
+            } else table_printer.printTable(table);
 		}
 		console.log();
 		trasformatore(myAccountAddress);

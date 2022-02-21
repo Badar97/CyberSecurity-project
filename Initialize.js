@@ -1,7 +1,6 @@
 const Web3 = require("web3");
 const fs = require("fs");
 const compiler = require("./compiler.js");
-
 let web3 = new Web3('http://localhost:22000');
 let web3_2 = new Web3('http://localhost:22001');
 let web3_3 = new Web3('http://localhost:22002');
@@ -24,22 +23,15 @@ web3.eth.getAccounts().then((value) => {
 });
 
 function deploy(address) {
-
 	console.log("ACCOUNT USATO: " + address);
-
 	var values = compiler.compile("CarbonFootprint/CarbonFootprint.sol"); 
 	var abi = values[0];
 	var bytecode = values[1];
-
 	var wallets = JSON.parse(fs.readFileSync('wallets.json'));
-
 	var simpleContract = new web3.eth.Contract(abi);
-
 	simpleContract.deploy({ data: "0x" + bytecode, arguments: wallets}).send({ from: address }).then(function(newContractInstance){
 		console.log('DEPLOY COMPLETO');
 		console.log('INDIRIZZO DELLO SMART CONTRACT: ' + newContractInstance.options.address);
 		fs.writeFileSync('CarbonFootprint/address.json', '[\n"' + newContractInstance.options.address + '"\n]');
 	});
-
-	return;
 }

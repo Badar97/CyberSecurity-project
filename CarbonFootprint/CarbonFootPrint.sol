@@ -29,7 +29,7 @@ contract CarbonFootPrint {
     address transformer;
     address customer;
 
-    uint256 id_lot;
+    uint id_lot;
     
     constructor (address _supplier, address _transformer, address _customer) {
         supplier = _supplier;
