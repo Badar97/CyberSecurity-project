@@ -108,7 +108,7 @@ function add_product(){
 			message: 'QUANTITA\'',
 			validate: (answer) => {
 				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-				else if (answer <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
+				else if (parseInt(answer) <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
 				return true;
 			}
 		}

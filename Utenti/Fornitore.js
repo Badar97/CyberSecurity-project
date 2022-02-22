@@ -51,7 +51,7 @@ function add_raw_material() {
 			message: 'FOOTPRINT', 
 			validate: (answer) => {
 				if (isNaN(parseInt(answer))) return 'ERRORE - FOOTPRINT DEVE ESSERE UN NUMERO INTERO';
-				else if (answer < 0) return 'ERRORE - FOOTPRINT NON PUO\' AVERE UN VALORE NEGATIVO'
+				else if (parseInt(answer) < 0) return 'ERRORE - FOOTPRINT NON PUO\' AVERE UN VALORE NEGATIVO'
 				return true;
 			} 
 		},	
@@ -61,7 +61,7 @@ function add_raw_material() {
 			message: 'QUANTITA\'',
 			validate: (answer) => {
 				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-				else if (answer <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
+				else if (parseInt(answer) <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
 				return true;
 			}
 		}
