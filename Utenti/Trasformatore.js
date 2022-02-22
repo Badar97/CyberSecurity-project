@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Model.js');
+const Helper = require('../Helper.js');
 
 var myAccountAddress = null;
 
@@ -44,21 +45,12 @@ function purchase_material() {
 	inquirer.prompt(question).then((answer) => {
         Model.SearchByName(answer.nome).then((result) => {
 			if (result) {
-				var table = [];
                 var id = [];
-                result.forEach(element => {
-                    if (!element.sold) {
-                        var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
-                        id.push(element.id);
-                        table.push(new_row);
-                    }
-                });
-                if (table.length == 0) {
-                    console.log('\nNESSUN LOTTO DISPONIBILE\n');
+                result.forEach(element => { if (!element.sold) id.push(element.id) });
+                if (!Helper.print_lots(result, true)) {
+                    console.log('NESSUN LOTTO DISPONIBILE\n');
                     trasformatore(myAccountAddress);
                 } else {
-                    console.log('\nLOTTI DI ' + answer.nome.toUpperCase() + '\n');
-                    table_printer.printTable(table);
                     console.log();
                     var question = [
                         {
@@ -87,29 +79,19 @@ function purchase_material() {
                 trasformatore(myAccountAddress);
             }
 		});
-
     });		
 }
 
 function check_lots() {
-    Model.CheckMyLots(myAccountAddress).then((result)=>{
-        if (result) {
-            console.log();
-			var table = [];
-			result.forEach(element => {
-				var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
-				table.push(new_row);
-			});
-            if (table.length == 0) {
-                console.log('NESSUN LOTTO ACQUISTATO');
-            } else table_printer.printTable(table);
-		}
+    Model.CheckMyLots(myAccountAddress).then((result) => {
+        if (result) if (!Helper.print_lots(result, false)) console.log('NESSUN LOTTO ACQUISTATO');
 		console.log();
 		trasformatore(myAccountAddress);
     });
 }
 
-/*function add_product(){
+function add_product(){
+
     var question = [
 		{ 
 			type: 'input', 
@@ -128,7 +110,15 @@ function check_lots() {
 		}
 	];
 
-    console.log('\nLOTTI DI TUA PROPRIETA\'');
+    inquirer.prompt(question).then((answer) => {
+        Model.CheckMyLots(myAccountAddress).then((result) => {
+            console.log('\nLOTTI DI TUA PROPRIETA\'');
+            if (result) Helper.print_lots(result, false);
+            console.log();
+        });
+    })
+
+    return;
 
     var question2 = [
         { 
@@ -154,6 +144,6 @@ function check_lots() {
 			else fornitore();
 		});
 	});
-}*/
+}
 
 exports.trasformatore = trasformatore;

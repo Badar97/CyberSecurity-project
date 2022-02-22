@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Model.js');
+const Helper = require('../Helper.js');
 
 var myAccountAddress = null;
 
@@ -75,9 +76,8 @@ function add_raw_material() {
 				Model.GetLastID().then((last_id) => {
 					Model.AddRawMaterial(last_id, answer, myAccountAddress).then((result) => {
 						if (result) {
-							console.log('\nTRANSAZIONE ESEGUITA\n');
-							var table = [{ LOTTO: last_id, MATERIA: answer.nome, FOOTPRINT: answer.footprint, QUANTITA: answer.amount }];
-							table_printer.printTable(table);						
+							console.log('\nTRANSAZIONE ESEGUITA');
+							console.log('\nLOTTO: ' + last_id + '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);					
 						}
 						console.log();
 						fornitore(myAccountAddress);
@@ -101,19 +101,7 @@ function search_name() {
 	];
 	inquirer.prompt(question).then((answer) => {
 		Model.SearchByName(answer.nome).then((result) => {
-			if (result) {
-				console.log();
-				var table = [];
-				result.forEach(element => {
-					if (!element.sold) {
-						var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
-						table.push(new_row);
-					}
-				});
-				if (table.length == 0) {
-					console.log('NESSUN LOTTO DISPONIBILE');
-				} else table_printer.printTable(table);
-			}
+			if (result) if (!Helper.print_lots(result, true)) console.log('NESSUN LOTTO DISPONIBILE');
 			console.log();
 			fornitore(myAccountAddress);
 		})
