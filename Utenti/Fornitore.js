@@ -81,10 +81,19 @@ function add_raw_material() {
 					Model.AddRawMaterial(last_id, answer, myAccountAddress).then((result) => {
 						if (result) {
 							console.log('\nTRANSAZIONE ESEGUITA');
-							console.log('\nLOTTO: ' + last_id + '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);					
+							Model.SearchByLot(last_id).then((result) => {
+								if (result) {
+									console.log();
+									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
+									table_printer.printTable(table);
+								}
+								console.log();
+								fornitore(myAccountAddress);
+							});
+						} else {
+							console.log();
+							fornitore(myAccountAddress);
 						}
-						console.log();
-						fornitore(myAccountAddress);
 					});
 				});
 			} else {

@@ -77,7 +77,7 @@ async function PurchaseLot(ids, myAccountAddress) {
     return result;
 }
 
-async function AddProduct(id, name, array, amount) {
+async function AddProduct(id, name, array, amount, myAccountAddress) {
 	var result = null;
 	try {
 		await myContract2.methods.AddProduct(id, name, array, amount).send({from: myAccountAddress}).then((response) => {
@@ -95,3 +95,4 @@ exports.SearchByName = SearchByName;
 exports.SearchByLot = SearchByLot;
 exports.CheckMyLots = CheckMyLots;
 exports.PurchaseLot = PurchaseLot;
+exports.AddProduct = AddProduct;

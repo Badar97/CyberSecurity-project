@@ -103,22 +103,25 @@ contract CarbonFootPrint {
     }
 
     //INSERIMENTO NUOVO PRODOTTO (TRASFORMATORE)
-    function AddProduct(uint _id, string memory _name, uint[][] memory _lot_amount_usedXelement, uint  _amount) public {
+    function AddProduct(uint _id, string memory _name, uint[][] memory _lot_amount, uint  _amount) public {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
 
         uint256 _total_carbonfootprint = 0;
 
-        /*MATRICE _lot_amountXelement
+        /* 
+        MATRICE _lot_amount
         Ogni colonna corrisponde ad un lotto
         Nella prima riga sono memorizzati gli ID
-        Nella seconda riga sono memorizzate le quantità usate dei lotti*/
+        Nella seconda riga sono memorizzate le quantità usate dei lotti
+        */
 
-        for(uint256 i = 0; i < _lot_amount_usedXelement[0].length; i++){ 
-            Lot memory elem = getLotByID[_lot_amount_usedXelement[0][i]];
-            uint256 elem_carbonfootprint_lot = elem.carbonfootprint;
-            uint256 elem_amount_tot = elem.amount;
-            uint256 elem_amount_used = _lot_amount_usedXelement[1][i];
-            _total_carbonfootprint += (elem_carbonfootprint_lot/elem_amount_tot*elem_amount_used);
+        for(uint i = 0; i < _lot_amount[0].length; i++){ 
+            Lot memory lot = getLotByID[_lot_amount[0][i]];
+            uint lot_carbonfootprint = lot.carbonfootprint;
+            uint lot_amount = lot.amount;
+            uint amount_used = _lot_amount[1][i];
+            _total_carbonfootprint += (lot_carbonfootprint / lot_amount * amount_used);
+            getLotByID[_lot_amount[0][i]].residual_amount -= _lot_amount[1][i];
         }
 
         AddLot(_id, _name, _total_carbonfootprint, _amount);
