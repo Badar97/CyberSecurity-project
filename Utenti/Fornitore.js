@@ -73,21 +73,17 @@ function add_raw_material() {
 		inquirer.prompt(question2).then((answer2) => {
 			if (answer2.confirm) {
 				Model.GetLastID().then((last_id) => {
-					if(last_id[0]) console.log('\nERRORE DURANTE LA TRANSAZIONE');
-					else {
-						Model.AddRawMaterial(last_id[1], answer, myAccountAddress).then((result) => {
-							if (result[0]) console.log('\n' + result[1].toString().slice(43));
-							else {
-								console.log('\nTRANSAZIONE ESEGUITA');
-								console.log('\nLOTTO: ' + last_id[1] + '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint +'\nQUANTITA\': ' + answer.amount);
-							}
-							console.log();
-							fornitore(myAccountAddress);
-						});
-					}
+					Model.AddRawMaterial(last_id, answer, myAccountAddress).then((result) => {
+						if (result) {
+							console.log('\nTRANSAZIONE ESEGUITA\n');
+							var table = [{ LOTTO: last_id, MATERIA: answer.nome, FOOTPRINT: answer.footprint, QUANTITA: answer.amount }];
+							table_printer.printTable(table);						
+						}
+						console.log();
+						fornitore(myAccountAddress);
+					});
 				});
-			}
-			else {
+			} else {
 				console.log('\nTRANSAZIONE ANNULLATA\n');
 				fornitore(myAccountAddress);
 			}
@@ -105,11 +101,10 @@ function search_name() {
 	];
 	inquirer.prompt(question).then((answer) => {
 		Model.SearchByName(answer.nome).then((result) => {
-			if (result[0]) console.log('\n' + result[1].toString().slice(43));
-			else {
+			if (result) {
 				console.log();
 				var table = [];
-				result[1].forEach(element => {
+				result.forEach(element => {
 					if (!element.sold) {
 						var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
 						table.push(new_row);
@@ -126,6 +121,7 @@ function search_name() {
 }
 
 function search_lot() {
+	
 	var question = [
 		{ 
 			type: 'input', 
@@ -137,18 +133,17 @@ function search_lot() {
 			} 
 		}
 	]
+
 	inquirer.prompt(question).then((answer) => {
 		Model.SearchByLot(answer.lotto).then((result) => {
-			if (result[0]) console.log('\n' + result[1].toString().slice(43));
-			else {
+			if (result) {
 				console.log();
-				var table = [{ LOTTO: result[1].id, MATERIA: result[1].name, FOOTPRINT: result[1].carbonfootprint, QUANTITA: result[1].amount, RESIDUO: result[1].residual_amount, VENDUTO: result[1].sold }];
+				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
 				table_printer.printTable(table);
 			}
 			console.log();
 			fornitore(myAccountAddress);
 		});
-		
 	});
 }
 

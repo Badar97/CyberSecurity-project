@@ -19,7 +19,7 @@ function interface() {
 			case question.choices[0]: Fornitore.fornitore(wallets[0]); break;
 			case question.choices[1]: Trasformatore.trasformatore(wallets[1]); break;
 			case question.choices[2]: Cliente.cliente(wallets[2]); break;
-			default: console.log('\n'); return;
+			default: console.log(); return;
 		}
 	});
 }

@@ -43,11 +43,10 @@ function purchase_material() {
 	];
 	inquirer.prompt(question).then((answer) => {
         Model.SearchByName(answer.nome).then((result) => {
-			if (result[0]) console.log('\n' + result[1].toString().slice(43));
-			else {
+			if (result) {
 				var table = [];
                 var id = [];
-                result[1].forEach(element => {
+                result.forEach(element => {
                     if (!element.sold) {
                         var new_row = { LOTTO: element.id, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount };
                         id.push(element.id);
@@ -76,16 +75,16 @@ function purchase_material() {
                             trasformatore(myAccountAddress);
                         } else {
                             Model.PurchaseLot(answer.lotti, myAccountAddress).then((result) => {
-                                if (result[0]) {
-                                    console.log('\n' + result[1].toString()/*.slice(43)*/);
-                                }
-                                else console.log('\nTRANSAZIONE ESEGUITA');
+                                if (result) console.log('\nTRANSAZIONE ESEGUITA');
                                 console.log();
                                 trasformatore(myAccountAddress);
                             });
                         }
                     });
                 }
+            } else {
+                console.log();
+                trasformatore(myAccountAddress);
             }
 		});
 
@@ -93,13 +92,11 @@ function purchase_material() {
 }
 
 function check_lots() {
-    
     Model.CheckMyLots(myAccountAddress).then((result)=>{
-        if (result[0]) console.log('\n' + result[1].toString().slice(43));
-		else {
+        if (result) {
             console.log();
 			var table = [];
-			result[1].forEach(element => {
+			result.forEach(element => {
 				var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
 				table.push(new_row);
 			});
