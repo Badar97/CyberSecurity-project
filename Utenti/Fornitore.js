@@ -1,8 +1,8 @@
 const inquirer = require('inquirer');
 const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
-const Model = require('../Model.js');
-const Helper = require('../Helper.js');
+const Model = require('../Utils/Model.js');
+const Helper = require('../Utils/Helper.js');
 
 var myAccountAddress = null;
 

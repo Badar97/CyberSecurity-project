@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const Fornitore = require('./Utenti/Fornitore.js');
 const Trasformatore = require('./Utenti/Trasformatore.js');
 const Cliente = require('./Utenti/Cliente.js');
-const wallets = JSON.parse(fs.readFileSync('wallets.json'));
+const wallets = JSON.parse(fs.readFileSync('./Assets/wallets.json'));
 
 interface();
 

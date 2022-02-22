@@ -2,7 +2,7 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-contract CarbonFootPrint {
+contract CarbonFootprint {
 
     // LOTTI DI MATERIE PRIME E DI PRODOTTI
     struct Lot {

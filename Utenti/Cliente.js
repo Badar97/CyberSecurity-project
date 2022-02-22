@@ -1,9 +1,8 @@
-const fs = require("fs");
 const inquirer = require('inquirer');
-const compiler = require("../compiler.js");
-
-const Web3 = require("web3");
-let web3 = new Web3('http://localhost:22002');
+const table_printer = require('console-table-printer');
+const Interface = require('../Interface.js');
+const Model = require('../Utils/Model.js');
+const Helper = require('../Utils/Helper.js');
 
 function cliente(address) {
 
