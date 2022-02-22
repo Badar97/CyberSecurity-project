@@ -122,26 +122,29 @@ function add_product(){
         Model.CheckMyLots(myAccountAddress).then((result) => {
 
             var id = [];
-            result.forEach(element => { id.push(element.id) });
+            result.forEach(element => {
+                    if(element.residual_amount !=0) {
+                        id.push(element.id);
+                        } }) 
 
-            var question2 = [
-                { 
-                    type: 'list', 
-                    name: 'lotto', 
-                    message: 'SELEZIONA IL LOTTO DA CUI PRELEVARE MATERIE PRIME',
-                    choices: [...id, ...['FINE']]
-                }
-            ]
-
-            add_product_details(question2, result, array);
+            add_product_details(id, result, array, answer);
 
         });
     })
 
 }
 
-function add_product_details(question2, result, array) {
+function add_product_details( id, result, array , answer) {
 
+    var question2 = [
+        { 
+            type: 'list', 
+            name: 'lotto', 
+            message: 'SELEZIONA IL LOTTO DA CUI PRELEVARE MATERIE PRIME',
+            choices: [...id, ...['FINE']]
+        }
+    ]
+    
     console.log('\nLOTTI DI TUA PROPRIETA\'');
     if (result) if (!Helper.print_lots(result, false)) {
         console.log('NESSUN LOTTO ACQUISTATO\n');
@@ -183,7 +186,7 @@ function add_product_details(question2, result, array) {
                     result.forEach((element, index) => {
                         if (element.id != answer2.lotto) new_array[index] = element;
                         else {
-                            var new_lot = {
+                            var residual_lot = {
                                 id: element.id,
                                 name: element.name,
                                 carbonfootprint: element.carbonfootprint,
@@ -191,18 +194,43 @@ function add_product_details(question2, result, array) {
                                 residual_amount: element.residual_amount - answer3.amount,
                                 sold: element.sold
                             };
-                            new_array[index] = new_lot;
+                            new_array[index] = residual_lot;
                         }
                     });        
 
                     array[0].push(answer2.lotto);
                     array[1].push(answer3.amount);
 
-                    if(answer2.lotto != 'FINE')
-                    add_product_details(question2, new_array, array);
-                    else console.log(array);
+                        var id2 = [];
+                        new_array.forEach(element => {
+                        if(element.residual_amount !=0) {
+                            id2.push(element.id);
+                        } }) 
+                        add_product_details( id2, new_array, array, answer);   
                 });
-            } else console.log(array);
+            }    
+            else if(!array[0].length) {
+                console.log("\nDEVI SELEZIONARE ALMENO UNA MATERIA PRIMA\n");
+                trasformatore(myAccountAddress); 
+            } else {
+                Model.GetLastID().then((last_id)  => {
+                    Model.AddProduct(last_id, answer.nome, array, answer.amount).then((result) => {
+						if (result) {
+							console.log('\nTRANSAZIONE ESEGUITA');
+							Model.SearchByLot(last_id).then((result) => {
+                                if (result) {
+                                    console.log(result);
+                                }	
+						} )
+                    }
+						console.log();
+						fornitore(myAccountAddress);
+					});
+                }
+
+                )
+
+            }
         });
     }
 }

@@ -77,6 +77,18 @@ async function PurchaseLot(ids, myAccountAddress) {
     return result;
 }
 
+async function AddProduct(id, name, array, amount) {
+	var result = null;
+	try {
+		await myContract2.methods.AddProduct(id, name, array, amount).send({from: myAccountAddress}).then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error) }
+    return result;
+}
+
+
+
 exports.GetLastID = GetLastID;
 exports.AddRawMaterial = AddRawMaterial;
 exports.SearchByName = SearchByName;
