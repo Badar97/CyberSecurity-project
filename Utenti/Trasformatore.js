@@ -96,7 +96,11 @@ function add_product(){
 		{ 
 			type: 'input', 
 			name: 'nome', 
-			message: 'NOME PRODOTTO' 
+			message: 'NOME PRODOTTO',
+            validate: (answer) => {
+				if (!answer.length) return false;
+				return true;
+			} 
 		}, 	
 		{ 
 			type: 'input', 
@@ -104,46 +108,87 @@ function add_product(){
 			message: 'QUANTITA\'',
 			validate: (answer) => {
 				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-				else if (answer <= 0) return 'ERRORE - QUANTINTA\' DEVE ESSERE MAGGIORE DI 0'
+				else if (answer <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
 				return true;
 			}
 		}
 	];
 
+    var array = new Array();
+    array[0] = new Array();
+    array[1] = new Array();
+
     inquirer.prompt(question).then((answer) => {
         Model.CheckMyLots(myAccountAddress).then((result) => {
-            console.log('\nLOTTI DI TUA PROPRIETA\'');
-            if (result) Helper.print_lots(result, false);
-            console.log();
+
+            var id = [];
+            result.forEach(element => { id.push(element.id) });
+
+            var question2 = [
+                { 
+                    type: 'list', 
+                    name: 'lotto', 
+                    message: 'SELEZIONA IL LOTTO DA CUI PRELEVARE MATERIE PRIME',
+                    choices: [...id, ...['FINE']]
+                }
+            ]
+
+            add_product_details(question2, result, array);
+
         });
     })
 
-    return;
+}
 
-    var question2 = [
-        { 
-			type: 'input', 
-			name: 'nome', 
-			message: 'MATERIE PRIME UTILIZZATE PER REALIZZARE IL PRODOTTO CHE SI STA INSERENDO' 
-		}
-    ]
+function add_product_details(question2, result, array) {
 
+    console.log('\nLOTTI DI TUA PROPRIETA\'');
+    if (result) Helper.print_lots(result, false);
+    console.log();
 
-    
+    inquirer.prompt(question2).then((answer2) => {
 
-	inquirer.prompt(question).then((answer) => {
-		var question2 = [
-			{ 
-				type: 'confirm', 
-				name: 'confirm', 
-				message: '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint + '\nQUANTITA\': ' + answer.amount + '\n\nSEI SICURO DI VOLER INSERIRE QUESTO LOTTO?'
-			}
-		];
-		inquirer.prompt(question2).then((answer2) => {
-			if (answer2.confirm) AddRawMaterial(answer);
-			else fornitore();
-		});
-	});
+        var question3 = [
+            { 
+                type: 'input', 
+                name: 'amount', 
+                message: 'INSERISCI LA QUANTITA\' DA PRELEVARE',
+                validate: (answer) => {
+
+                    var residual = 0;
+                    result.forEach(element => {
+                        if(element.id == answer2.lotto) residual = element.residual_amount;
+                    }); 
+
+                    if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
+                    else if (answer <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0';
+                    else if (answer > residual) return 'ERRORE - LA QUANTITA\' NON PUO\' SUPERARE IL RESIDUO (' + residual +')';
+                    return true;
+                }
+            },
+            { 
+                type: 'confirm', 
+                name: 'confirm', 
+                message: 'SEI SICURO?' 
+            }
+        ]
+
+        if (answer2.lotto != 'FINE') {
+                inquirer.prompt(question3).then((answer3) => {
+
+                result.forEach(element => {
+                    if (element.id == answer2.lotto) element.residual_amount -= answer3.amount;
+                });
+
+                array[0].push(answer2.lotto);
+                array[1].push(answer3.amount);
+
+                if(answer2.lotto != 'FINE')
+                add_product_details(question2, result, array);
+                else console.log(array);
+            });
+        } else console.log(array);
+    });
 }
 
 exports.trasformatore = trasformatore;

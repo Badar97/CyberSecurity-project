@@ -39,7 +39,11 @@ function add_raw_material() {
 		{ 
 			type: 'input', 
 			name: 'nome', 
-			message: 'MATERIA PRIMA' 
+			message: 'MATERIA PRIMA',
+			validate: (answer) => {
+				if (!answer.length) return false;
+				return true;
+			} 
 		}, 
 		{ 
 			type: 'input', 
@@ -57,7 +61,7 @@ function add_raw_material() {
 			message: 'QUANTITA\'',
 			validate: (answer) => {
 				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-				else if (answer <= 0) return 'ERRORE - QUANTINTA\' DEVE ESSERE MAGGIORE DI 0'
+				else if (answer <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
 				return true;
 			}
 		}
