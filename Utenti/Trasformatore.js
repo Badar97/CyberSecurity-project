@@ -143,52 +143,56 @@ function add_product(){
 function add_product_details(question2, result, array) {
 
     console.log('\nLOTTI DI TUA PROPRIETA\'');
-    if (result) Helper.print_lots(result, false);
-    console.log();
+    if (result) if (!Helper.print_lots(result, false)) {
+        console.log('NESSUN LOTTO ACQUISTATO\n');
+        trasformatore(myAccountAddress);
+    } else {
+        console.log();
 
-    inquirer.prompt(question2).then((answer2) => {
+        inquirer.prompt(question2).then((answer2) => {
 
-        var question3 = [
-            { 
-                type: 'input', 
-                name: 'amount', 
-                message: 'INSERISCI LA QUANTITA\' DA PRELEVARE',
-                validate: (answer) => {
+            var question3 = [
+                { 
+                    type: 'input', 
+                    name: 'amount', 
+                    message: 'INSERISCI LA QUANTITA\' DA PRELEVARE',
+                    validate: (answer) => {
 
-                    var residual = 0;
-                    result.forEach(element => {
-                        if(element.id == answer2.lotto) residual = element.residual_amount;
-                    }); 
+                        var residual = 0;
+                        result.forEach(element => {
+                            if(element.id == answer2.lotto) residual = element.residual_amount;
+                        }); 
 
-                    if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-                    else if (answer <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0';
-                    else if (answer > residual) return 'ERRORE - LA QUANTITA\' NON PUO\' SUPERARE IL RESIDUO (' + residual +')';
-                    return true;
+                        if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
+                        else if (answer <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0';
+                        else if (answer > residual) return 'ERRORE - LA QUANTITA\' NON PUO\' SUPERARE IL RESIDUO (' + residual +')';
+                        return true;
+                    }
+                },
+                { 
+                    type: 'confirm', 
+                    name: 'confirm', 
+                    message: 'SEI SICURO?' 
                 }
-            },
-            { 
-                type: 'confirm', 
-                name: 'confirm', 
-                message: 'SEI SICURO?' 
-            }
-        ]
+            ]
 
-        if (answer2.lotto != 'FINE') {
-                inquirer.prompt(question3).then((answer3) => {
+            if (answer2.lotto != 'FINE') {
+                    inquirer.prompt(question3).then((answer3) => {
 
-                result.forEach(element => {
-                    if (element.id == answer2.lotto) element.residual_amount -= answer3.amount;
+                    result.forEach(element => {
+                        if (element.id == answer2.lotto) element.residual_amount -= answer3.amount;
+                    });
+
+                    array[0].push(answer2.lotto);
+                    array[1].push(answer3.amount);
+
+                    if(answer2.lotto != 'FINE')
+                    add_product_details(question2, result, array);
+                    else console.log(array);
                 });
-
-                array[0].push(answer2.lotto);
-                array[1].push(answer3.amount);
-
-                if(answer2.lotto != 'FINE')
-                add_product_details(question2, result, array);
-                else console.log(array);
-            });
-        } else console.log(array);
-    });
+            } else console.log(array);
+        });
+    }
 }
 
 exports.trasformatore = trasformatore;
