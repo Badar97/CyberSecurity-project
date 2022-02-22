@@ -179,15 +179,27 @@ function add_product_details(question2, result, array) {
             if (answer2.lotto != 'FINE') {
                     inquirer.prompt(question3).then((answer3) => {
 
-                    result.forEach(element => {
-                        if (element.id == answer2.lotto) element.residual_amount -= answer3.amount;
-                    });
+                    var new_array = [];
+                    result.forEach((element, index) => {
+                        if (element.id != answer2.lotto) new_array[index] = element;
+                        else {
+                            var new_lot = {
+                                id: element.id,
+                                name: element.name,
+                                carbonfootprint: element.carbonfootprint,
+                                amount: element.amount,
+                                residual_amount: element.residual_amount - answer3.amount,
+                                sold: element.sold
+                            };
+                            new_array[index] = new_lot;
+                        }
+                    });        
 
                     array[0].push(answer2.lotto);
                     array[1].push(answer3.amount);
 
                     if(answer2.lotto != 'FINE')
-                    add_product_details(question2, result, array);
+                    add_product_details(question2, new_array, array);
                     else console.log(array);
                 });
             } else console.log(array);
