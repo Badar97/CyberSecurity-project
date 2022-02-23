@@ -12,7 +12,7 @@ const myContract2 = new web3_2.eth.Contract(abi, contractAddress);
 const myContract3 = new web3_3.eth.Contract(abi, contractAddress);
 
 function print_error(error) {
-	console.log('\n' + error.toString().slice(43));
+	console.log('\n' + error.toString().slice());
 }
 
 //MODEL FORNITORE
@@ -88,6 +88,27 @@ async function AddProduct(id, name, array, amount, myAccountAddress) {
     return result;
 }
 
+async function TrasformationLot(id, footprint , myAccountAddress) {
+	var result = null;
+	try {
+		await myContract2.methods.TrasformationLot(id, footprint).send({from: myAccountAddress}).then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error) }
+    return result;
+}
+
+//MODEL CLIENTE
+
+async function CheckLotBuyable() {
+	var result = null;
+	try {
+		await myContract3.methods.CheckLotBuyable().call().then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error) }
+    return result;
+}
 
 
 exports.GetLastID = GetLastID;
@@ -97,3 +118,5 @@ exports.SearchByLot = SearchByLot;
 exports.CheckMyLots = CheckMyLots;
 exports.PurchaseLot = PurchaseLot;
 exports.AddProduct = AddProduct;
+exports.TrasformationLot = TrasformationLot;
+exports.CheckLotBuyable = CheckLotBuyable;

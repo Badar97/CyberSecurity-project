@@ -12,6 +12,7 @@ contract CarbonFootprint {
         uint amount;
         uint residual_amount;
         bool sold;
+        address owner;
     }
 
     // MEMORIZZAZIONE LOTTI PER ID E PER MATERIA PRIMA
@@ -22,7 +23,7 @@ contract CarbonFootprint {
     mapping(string => bool) private ExistRawMaterial;
 
     // MEMORIZZAZIONE LOTTI PER PROPRIETARIO (TRASFORMATORE)
-    mapping(address => uint[]) private getLotByTransfromerAddress;
+    mapping(address => uint[]) private getLotByAddress;
 
     // COSTRUTTORE
     address supplier;
@@ -35,7 +36,7 @@ contract CarbonFootprint {
         supplier = _supplier;
         transformer = _transformer;
         customer = _customer;
-        id_lot = 0;
+        id_lot = 1;
     }
 
     // INSERIMENTO NUOVA MATERIA PRIMA (FORNITORE)
@@ -58,7 +59,8 @@ contract CarbonFootprint {
             carbonfootprint: _carbonfootprint, 
             amount: _amount,
             residual_amount: _amount,
-            sold: false
+            sold: false,
+            owner: msg.sender
         });
 
         getLotByID[new_lot.id] = new_lot;
@@ -66,6 +68,7 @@ contract CarbonFootprint {
 
         ExistLot[new_lot.id] = true;
         ExistRawMaterial[_name] = true;
+        getLotByAddress[msg.sender].push(_id);
     }
 
     function SearchInfoLot(uint _lot) public view returns (Lot memory material) {
@@ -88,16 +91,19 @@ contract CarbonFootprint {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         for (uint i = 0; i < _id.length; i++) {
             getLotByID[_id[i]].sold = true;
-            getLotByTransfromerAddress[msg.sender].push(_id[i]);
-        }
+            getLotByAddress[msg.sender].push(_id[i]);
+
+            //ID LOTTO 0: UTENTE NON HA PIU' IN POSSESSO QUEL LOTTO
+            delete getLotByAddress[getLotByID[_id[i]].owner];
+        }      
     }
 
     function CheckMyLots(address _add) public view returns (Lot[] memory lot) {
-        require (_add == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
-        uint size = getLotByTransfromerAddress[_add].length;
+        require (_add == transformer || _add == supplier , "ERRORE - SOLO I TRASFORMATORI/FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
+        uint size = getLotByAddress[_add].length;
         Lot[] memory temp = new Lot[](size);
         for (uint i = 0; i < size ; i++) {
-            temp[i] = getLotByID[getLotByTransfromerAddress[_add][i]];
+            temp[i] = getLotByID[getLotByAddress[_add][i]];
         }
         return temp;
     }
@@ -126,5 +132,22 @@ contract CarbonFootprint {
 
         AddLot(_id, _name, _total_carbonfootprint, _amount);
     }
+
+    //FUNZIONE DI TRASFORMAZIONE LOTTO (TRASFORMATORE)
+    function TrasformationLot(uint _id, uint _footprint) public {
+        require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
+        getLotByID[_id].carbonfootprint += _footprint;
+    }
+
+    //FUNZIONE CHE RITORNA TUTTI I LOTTI ACQUISTABILI (CLIENTE)
+    function CheckLotBuyable() public view returns (Lot[] memory lot){      
+        Lot[] memory temp = new Lot[](id_lot);
+        if (id_lot == 0) return temp;
+        for (uint i = 0; i < id_lot - 1 ; i++) {
+            temp[i] = getLotByID[i+1];
+        }
+        return temp;
+    }
+
 }
 

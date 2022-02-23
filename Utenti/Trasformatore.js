@@ -16,9 +16,12 @@ function trasformatore(address) {
             name: 'action',
             message: myString.menuTrasformatore_string,
             choices: [
+                myString.searchRawMaterial_string,
+                myString.searchLot_string,
                 myString.purchaseRawMaterial_string,
                 myString.viewLotsPurchased_string,
                 myString.insertProduct_string,
+                myString.transformation_string,
                 myString.back_string,
                 myString.exit_string
             ]
@@ -26,13 +29,60 @@ function trasformatore(address) {
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: purchase_material(); break;
-            case question.choices[1]: check_lots(); break;
-            case question.choices[2]: add_product(); break;
-            case question.choices[3]: Interface.interface(); break;
-            case question.choices[4]: default: return;
+            case question.choices[0]: search_name(); break;
+            case question.choices[1]: search_lot(); break;
+            case question.choices[2]: purchase_material(); break;
+            case question.choices[3]: check_lots(); break;
+            case question.choices[4]: add_product(); break;
+            case question.choices[5]: transformation(); break;
+            case question.choices[6]: Interface.interface(); break;
+            case question.choices[7]: default: return;
         }
     });
+}
+
+function search_name() {
+	var question = [
+		{ 
+			type: 'input', 
+			name: 'nome', 
+			message: myString.insertNameRawMaterial_string 
+		}
+	];
+	inquirer.prompt(question).then((answer) => {
+		Model.SearchByName(answer.nome).then((result) => {
+			if (result) if (!Helper.print_lots(result, true)) console.log(myString.unavailableLot_string);
+			console.log();
+			trasformatore(myAccountAddress);
+		})
+	});
+}
+
+function search_lot() {
+	
+	var question = [
+		{ 
+			type: 'input', 
+			name: 'lotto', 
+			message: myString.insertLotId_string,
+			validate: (answer) => {
+				if (isNaN(parseInt(answer))) return myString.errorInvalidLotId_string;
+				else return true;
+			} 
+		}
+	]
+
+	inquirer.prompt(question).then((answer) => {
+		Model.SearchByLot(answer.lotto).then((result) => {
+			if (result) {
+				console.log();
+				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
+				table_printer.printTable(table);
+			}
+			console.log();
+			trasformatore(myAccountAddress);
+		});
+	});
 }
 
 function purchase_material() {
@@ -230,6 +280,77 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
             }
         });
     }
+}
+
+function transformation(){
+    Model.CheckMyLots(myAccountAddress).then((result) => {
+        console.log('\n' + myString.lotsOwnProperty_string);
+        if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
+		console.log();
+
+        var id = [];
+        result.forEach(element => { if(element.residual_amount !=0) id.push(element.id) }); 
+
+        var question = [
+            { 
+                type: 'list', 
+                name: 'lotto', 
+                message: myString.selectLotToTransform_string,
+                choices: [...id, ...[myString.cancel_string]]
+            }]
+
+        var question2 = [
+            { 
+                type: 'input', 
+                name: 'footprint', 
+                message: myString.insertFootprintTransform_string,
+                validate: (answer) => {
+                    if (isNaN(parseInt(answer))) return myString.errorFootprintInt_string;
+                    else if (parseInt(answer) < 0) return myString.errorFootprintNegative_string
+                    return true;
+                }       
+            },
+            { 
+                type: 'confirm', 
+                name: 'confirm', 
+                message: myString.confirm_string,
+            }
+        ]
+        
+
+        inquirer.prompt(question).then((answer) => {
+            if(answer.lotto != myString.cancel_string) {
+                inquirer.prompt(question2).then((answer2) => {
+                    if(answer2.confirm){
+                        Model.TrasformationLot(answer.lotto , answer2.footprint , myAccountAddress).then((result) => {
+                            if (result) {
+                                console.log('\n' + myString.transactionPerformed_string);
+                                Model.SearchByLot(answer.lotto).then((result) => {
+                                    if (result) {
+                                        console.log();
+                                        var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
+                                        table_printer.printTable(table);
+                                    }
+                                    console.log();
+                                    trasformatore(myAccountAddress);
+                                });
+                            } else {
+                                console.log();
+                                trasformatore(myAccountAddress);
+                            }
+                        }
+                        )
+                    } else {
+                        console.log('\n' + myString.transactionCanceled_string+ '\n');
+                        trasformatore(myAccountAddress);
+                    }
+                })
+            } else {
+                console.log('\n' + myString.transactionCanceled_string+ '\n');
+                trasformatore(myAccountAddress);
+            }
+        });
+    });
 }
 
 exports.trasformatore = trasformatore;

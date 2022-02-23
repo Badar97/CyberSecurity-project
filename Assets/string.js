@@ -76,11 +76,11 @@ exports.errorInvalidLotId_string = errorInvalidLotId_string
 /* -- STRINGHE TRASFORMATORE -- */
 const menuTrasformatore_string = 'MENU\' TRASFORMATORE';
 const purchaseRawMaterial_string = 'ACQUISTO MATERIE PRIME';
-const viewLotsPurchased_string = 'VISUALIZZA LOTTI ACQUISTATI';
+const viewLotsPurchased_string = 'VISUALIZZA LOTTI DI TUA PROPRIETA\'';
 const insertProduct_string = 'INSERIMENTO PRODOTTI';
 const witchRawMaterial_string = 'QUALE MATERIA PRIMA VUOI ACQUISTARE? ';
 const selectLotsToPuschase_string = 'SELEZIONA I LOTTI CHE VUOI ACQUISTARE';
-const noneLotPurchase_string = 'NESSUN LOTTO ACQUISTATO';
+const noneLotPurchase_string = 'NESSUN LOTTO DI TUA PROPRIETA\'';
 const nameProduct_string = 'NOME PRODOTTO';
 const selectLotTakeRawMaterial_string = 'SELEZIONA IL LOTTO DA CUI PRELEVARE MATERIE PRIME';
 const end_string = 'FINE';
@@ -91,6 +91,9 @@ const errorResidualQuantity_string = 'ERRORE - LA QUANTITA\' NON PUO\' SUPERARE 
 const errorResidualQuantityFinal_string = ')';
 const confirm_string = 'SEI SICURO?';
 const mustSelectrawMaterial_string = 'DEVI SELEZIONARE ALMENO UNA MATERIA PRIMA';
+const transformation_string = 'TRASFORMAZIONE';
+const selectLotToTransform_string = 'SELEZIONA IL LOTTO CHE VUOI TRANSFORMARE';
+const insertFootprintTransform_string = 'INSERISCI IL FOOTPRINT ASSOCIATO ALLA TRASFORMAZIONE';
 
 exports.menuTrasformatore_string = menuTrasformatore_string
 exports.purchaseRawMaterial_string = purchaseRawMaterial_string
@@ -109,8 +112,13 @@ exports.errorResidualQuantity_string = errorResidualQuantity_string
 exports.errorResidualQuantityFinal_string = errorResidualQuantityFinal_string
 exports.confirm_string = confirm_string
 exports.mustSelectrawMaterial_string = mustSelectrawMaterial_string
+exports.transformation_string = transformation_string
+exports.selectLotToTransform_string = selectLotToTransform_string
+exports.insertFootprintTransform_string = insertFootprintTransform_string
 
 /* -- STRINGHE CLIENTE -- */
 const menuCliente_string = 'MENU\' CLIENTE';
+const purchaseMaterial =  'ACQUISTA UN PRODOTTO';
 
 exports.menuCliente_string = menuCliente_string
+exports.purchaseMaterial = purchaseMaterial

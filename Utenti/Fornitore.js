@@ -19,6 +19,7 @@ function fornitore(address) {
 			myString.insertRawMaterial_string,
 			myString.searchRawMaterial_string,
 			myString.searchLot_string,
+			myString.viewLotsPurchased_string,
 			myString.back_string,
 			myString.exit_string
 		]
@@ -29,8 +30,9 @@ function fornitore(address) {
             case question.choices[0]: add_raw_material(); break;
 			case question.choices[1]: search_name(); break;
 			case question.choices[2]: search_lot(); break;
-			case question.choices[3]: Interface.interface(); break;
-            case question.choices[4]: default: return;
+			case question.choices[3]: check_lots(); break;
+			case question.choices[4]: Interface.interface(); break;
+            case question.choices[5]: default: return;
         }
     });
 }
@@ -149,4 +151,13 @@ function search_lot() {
 	});
 }
 
+function check_lots() {
+    Model.CheckMyLots(myAccountAddress).then((result) => {
+        if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
+		console.log();
+		fornitore(myAccountAddress);
+    });
+}
+
 exports.fornitore = fornitore;
+
