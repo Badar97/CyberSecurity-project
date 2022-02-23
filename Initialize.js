@@ -25,14 +25,12 @@ web3.eth.getAccounts().then((value) => {
 
 function deploy(address) {
 	console.log(myString.usedAccount_string + address);
-	var values = compiler.compile("./CarbonFootprint/CarbonFootprint.sol"); 
-	var abi = values[0];
-	var bytecode = values[1];
+	var values1 = compiler.compile("./CarbonFootprint/CarbonFootprint.sol"); 
+	var contract1 = new web3.eth.Contract(values1[0]);
 	var wallets = JSON.parse(fs.readFileSync('./Assets/wallets.json'));
-	var simpleContract = new web3.eth.Contract(abi);
-	simpleContract.deploy({ data: "0x" + bytecode, arguments: wallets}).send({ from: address }).then(function(newContractInstance){
-		console.log(myString.deployCompleted_string);
-		console.log(myString.addressContract_string + newContractInstance.options.address);
+	contract1.deploy({ data: "0x" + values1[1], arguments: wallets}).send({ from: address }).then(function(newContractInstance){
+		console.log(values1[2] + ' - ' + myString.deployCompleted_string);
+		console.log(values1[2] + ' - ' + myString.addressContract_string + newContractInstance.options.address);
 		fs.writeFileSync('./CarbonFootprint/address.json', '[\n"' + newContractInstance.options.address + '"\n]');
 	});
 }

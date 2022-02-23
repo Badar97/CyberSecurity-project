@@ -27,16 +27,15 @@ function compile(filepath) {
     
     let bytecode = null;
     let abi = null;
+    let name = ''
     // `output` here contains the JSON output as specified in the documentation
     for (var contractName in output.contracts[filepath]) {
     	bytecode = output.contracts[filepath][contractName].evm.bytecode.object;
     	abi = output.contracts[filepath][contractName].abi;
-    
-    	// console.log(contractName + " ABI: ", abi);
-    
+      name = contractName;  
     }
  
-    return [abi , bytecode];
+    return [abi, bytecode, name];
 
 }
 

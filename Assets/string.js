@@ -13,7 +13,7 @@ const node2_string = "Nodo 2: ";
 const node3_string = "Nodo 3: ";
 const usedAccount_string = "ACCOUNT USATO: ";
 const deployCompleted_string = 'DEPLOY COMPLETO';
-const addressContract_string = 'INDIRIZZO DELLO SMART CONTRACT: ';
+const addressContract_string = 'INDIRIZZO: ';
 
 exports.node1_string = node1_string
 exports.node2_string = node2_string
