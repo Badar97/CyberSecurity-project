@@ -32,7 +32,7 @@ function cliente(address) {
 }
 
 function PurchaseMaterial(){
-    Model.CheckLotBuyable().then((result) => { 
+    Model.CheckBuyableLots().then((result) => { 
         if (result) {
             var id = [];
             result.forEach(element => { if (!element.sold && element.amount > 0) id.push(element.id) });

@@ -100,10 +100,10 @@ async function TrasformationLot(id, footprint , myAccountAddress) {
 
 //MODEL CLIENTE
 
-async function CheckLotBuyable() {
+async function CheckBuyableLots() {
 	var result = null;
 	try {
-		await myContract3.methods.CheckLotBuyable().call().then((response) => {
+		await myContract3.methods.CheckBuyableLots().call().then((response) => {
 			result = response;
 		});
 	} catch (error) { print_error(error) }
@@ -119,4 +119,4 @@ exports.CheckMyLots = CheckMyLots;
 exports.PurchaseLot = PurchaseLot;
 exports.AddProduct = AddProduct;
 exports.TrasformationLot = TrasformationLot;
-exports.CheckLotBuyable = CheckLotBuyable;
+exports.CheckBuyableLots = CheckBuyableLots;

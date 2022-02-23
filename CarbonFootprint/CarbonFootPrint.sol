@@ -140,7 +140,7 @@ contract CarbonFootprint {
     }
 
     //FUNZIONE CHE RITORNA TUTTI I LOTTI ACQUISTABILI (CLIENTE)
-    function CheckLotBuyable() public view returns (Lot[] memory lot){      
+    function CheckBuyableLots() public view returns (Lot[] memory lot){      
         Lot[] memory temp = new Lot[](id_lot);
         for (uint i = 1; i <= id_lot; i++) {
             temp[i-1] = getLotByID[i];
