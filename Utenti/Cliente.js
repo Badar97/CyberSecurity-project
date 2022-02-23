@@ -3,29 +3,32 @@ const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Utils/Model.js');
 const Helper = require('../Utils/Helper.js');
-const String = require("../Assets/string.js");
+const myString = require("../Assets/string.js");
+
+var myAccountAddress = null;
 
 function cliente(address) {
 
-    console.log('HAI SELEZIONATO UN ACCOUNT CLIENTE');
+	myAccountAddress = address;
 
     var question = {
             type: 'list',
             name: 'action',
-            message: 'SELEZIONA UN\'OPERAZIONE',
+            message: myString.menuCliente_string,
             choices: [
-                '...',
-                'EXIT'
+                myString.back_string,
+                myString.exit_string
             ]
     }
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: console.log(question.choices[0]); break;
+            case question.choices[0]: Interface.interface(); break;
             case question.choices[1]: default: return;
         }
     });
-
 }
+
+
 
 exports.cliente = cliente;

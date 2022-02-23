@@ -3,7 +3,7 @@ const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Utils/Model.js');
 const Helper = require('../Utils/Helper.js');
-const String = require("../Assets/string.js");
+const myString = require("../Assets/string.js");
 
 var myAccountAddress = null;
 
@@ -14,13 +14,13 @@ function trasformatore(address) {
     var question = {
             type: 'list',
             name: 'action',
-            message: 'MENU\' TRASFORMATORE',
+            message: myString.menuTrasformatore_string,
             choices: [
-                'ACQUISTO MATERIE PRIME',
-                'VISUALIZZA LOTTI ACQUISTATI',
-                'INSERIMENTO PRODOTTI',
-                'BACK',
-                'EXIT'
+                myString.purchaseRawMaterial_string,
+                myString.viewLotsPurchased_string,
+                myString.insertProduct_string,
+                myString.back_string,
+                myString.exit_string
             ]
     }
     
@@ -40,7 +40,7 @@ function purchase_material() {
 		{ 
             type: 'input', 
             name: 'nome', 
-            message: 'QUALE MATERIA PRIMA VUOI ACQUISTARE? '
+            message: myString.witchRawMaterial_string
         }
 	];
 	inquirer.prompt(question).then((answer) => {
@@ -49,7 +49,7 @@ function purchase_material() {
                 var id = [];
                 result.forEach(element => { if (!element.sold) id.push(element.id) });
                 if (!Helper.print_lots(result, true)) {
-                    console.log('NESSUN LOTTO DISPONIBILE\n');
+                    console.log(myString.unavailableLot_string + '\n');
                     trasformatore(myAccountAddress);
                 } else {
                     console.log();
@@ -57,18 +57,18 @@ function purchase_material() {
                         {
                             type: 'checkbox',
                             name: 'lotti',
-                            message: '\nSELEZIONA I LOTTI CHE VUOI ACQUISTARE',
+                            message: '\n' + myString.selectLotsToPuschase_string,
                             choices: id
                         }
                     ]
                     inquirer.prompt(question).then((answer) => {
                         if (answer.lotti.length == 0) {
-                            console.log('\nTRANSAZIONE ANNULLATA');
+                            console.log('\n' + myString.transactionCanceled_string);
                             console.log();
                             trasformatore(myAccountAddress);
                         } else {
                             Model.PurchaseLot(answer.lotti, myAccountAddress).then((result) => {
-                                if (result) console.log('\nTRANSAZIONE ESEGUITA');
+                                if (result) console.log('\n' + myString.transactionPerformed_string);
                                 console.log();
                                 trasformatore(myAccountAddress);
                             });
@@ -85,7 +85,7 @@ function purchase_material() {
 
 function check_lots() {
     Model.CheckMyLots(myAccountAddress).then((result) => {
-        if (result) if (!Helper.print_lots(result, false)) console.log('NESSUN LOTTO ACQUISTATO');
+        if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
 		console.log();
 		trasformatore(myAccountAddress);
     });
@@ -97,7 +97,7 @@ function add_product(){
 		{ 
 			type: 'input', 
 			name: 'nome', 
-			message: 'NOME PRODOTTO',
+			message: myString.nameProduct_string,
             validate: (answer) => {
 				if (!answer.length) return false;
 				return true;
@@ -106,10 +106,10 @@ function add_product(){
 		{ 
 			type: 'input', 
 			name: 'amount', 
-			message: 'QUANTITA\'',
+			message: myString.quantity_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-				else if (parseInt(answer) <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
+				if (isNaN(parseInt(answer))) return myString.errorQuantityInt_string;
+				else if (parseInt(answer) <= 0) return myString.errorQuantityPositive_string
 				return true;
 			}
 		}
@@ -137,14 +137,14 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
         { 
             type: 'list', 
             name: 'lotto', 
-            message: 'SELEZIONA IL LOTTO DA CUI PRELEVARE MATERIE PRIME',
-            choices: [...id_array, ...['FINE', 'ANNULLA']]
+            message: myString.selectLotTakeRawMaterial_string,
+            choices: [...id_array, ...[myString.end_string, myString.cancel_string]]
         }
     ]
     
-    console.log('\nLOTTI DI TUA PROPRIETA\'');
+    console.log('\n' + myString.lotsOwnProperty_string);
     if (lot_array) if (!Helper.print_lots(lot_array, false)) {
-        console.log('NESSUN LOTTO ACQUISTATO\n');
+        console.log(myString.noneLotPurchase_string + '\n');
         trasformatore(myAccountAddress);
     } else {
         console.log();
@@ -153,7 +153,7 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
                 { 
                     type: 'input', 
                     name: 'amount', 
-                    message: 'INSERISCI LA QUANTITA\' DA PRELEVARE',
+                    message: myString.insertQuantityToTake_string,
                     validate: (answer) => {
 
                         var residual = 0;
@@ -161,20 +161,20 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
                             if(element.id == answer2.lotto) residual = element.residual_amount;
                         });
 
-                        if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-                        else if (parseInt(answer) <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0';
-                        else if (parseInt(answer) > parseInt(residual)) return 'ERRORE - LA QUANTITA\' NON PUO\' SUPERARE IL RESIDUO (' + residual + ')';
+                        if (isNaN(parseInt(answer))) return myString.errorQuantityInt_string;
+                        else if (parseInt(answer) <= 0) return myString.errorQuantityPositive_string;
+                        else if (parseInt(answer) > parseInt(residual)) return myString.errorResidualQuantity_string + residual + myString.errorResidualQuantityFinal_string;
                         return true;
                     }
                 },
                 { 
                     type: 'confirm', 
                     name: 'confirm', 
-                    message: 'SEI SICURO?' 
+                    message: myString.confirm_string 
                 }
             ]
 
-            if (answer2.lotto != 'FINE' && answer2.lotto != 'ANNULLA') {
+            if (answer2.lotto != myString.end_string && answer2.lotto != myString.cancel_string) {
                 inquirer.prompt(question3).then((answer3) => {
                     if (answer3.confirm) {
                         var new_id = [];
@@ -201,17 +201,17 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
                         add_product_details(new_id, new_array, choice_array, answer);  
                     } else add_product_details(id_array, lot_array, choice_array, answer);  
                 });
-            } else if(!choice_array[0].length && answer2.lotto != 'ANNULLA') {
-                console.log("\nDEVI SELEZIONARE ALMENO UNA MATERIA PRIMA");
+            } else if(!choice_array[0].length && answer2.lotto != myString.cancel_string) {
+                console.log('\n' + myString.mustSelectrawMaterial_string);
                 add_product_details(id_array, lot_array, choice_array, answer);
-            } else if (answer2.lotto == 'EXIT') {
+            } else if (answer2.lotto == myString.exit_string) {
                 console.log();
 				trasformatore(myAccountAddress);
             } else {
                 Model.GetLastID().then((last_id) => {
                     Model.AddProduct(last_id, answer.nome.toUpperCase(), choice_array, answer.amount, myAccountAddress).then((result) => {
 						if (result) {
-							console.log('\nTRANSAZIONE ESEGUITA');
+							console.log('\n' + myString.transactionPerformed_string);
 							Model.SearchByLot(last_id).then((result) => {
                                 if (result) {
 									console.log();

@@ -3,7 +3,7 @@ const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Utils/Model.js');
 const Helper = require('../Utils/Helper.js');
-const String = require("../Assets/string.js");
+const myString = require("../Assets/string.js");
 
 var myAccountAddress = null;
 
@@ -14,13 +14,13 @@ function fornitore(address) {
     var question = {
 		type: 'list',
 		name: 'action',
-		message: String.menuFornitore_string,
+		message: myString.menuFornitore_string,
 		choices: [
-			String.insertRawMaterial_string,
-			String.searchRawMaterial_string,
-			String.searchLot_string,
-			String.back_string,
-			String.exit_string
+			myString.insertRawMaterial_string,
+			myString.searchRawMaterial_string,
+			myString.searchLot_string,
+			myString.back_string,
+			myString.exit_string
 		]
 	};
     
@@ -40,7 +40,7 @@ function add_raw_material() {
 		{ 
 			type: 'input', 
 			name: 'nome', 
-			message: String.rawMaterial_string,
+			message: myString.rawMaterial_string,
 			validate: (answer) => {
 				if (!answer.length) return false;
 				return true;
@@ -49,20 +49,20 @@ function add_raw_material() {
 		{ 
 			type: 'input', 
 			name: 'footprint', 
-			message: String.footprint_string, 
+			message: myString.footprint_string, 
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return String.errorFootprintInt_string;
-				else if (parseInt(answer) < 0) return String.errorFootprintNegative_string
+				if (isNaN(parseInt(answer))) return myString.errorFootprintInt_string;
+				else if (parseInt(answer) < 0) return myString.errorFootprintNegative_string
 				return true;
 			} 
 		},	
 		{ 
 			type: 'input', 
 			name: 'amount', 
-			message: String.quantity_string,
+			message: myString.quantity_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return String.errorQuantityInt_string;
-				else if (parseInt(answer) <= 0) return String.errorQuantityPositive_string
+				if (isNaN(parseInt(answer))) return myString.errorQuantityInt_string;
+				else if (parseInt(answer) <= 0) return myString.errorQuantityPositive_string
 				return true;
 			}
 		}
@@ -73,7 +73,7 @@ function add_raw_material() {
 			{ 
 				type: 'confirm', 
 				name: 'confirm', 
-				message: '\n' + String.rawMaterial_string + ' ' +  answer.nome + '\n' + String.footprint_string + ' ' + answer.footprint + '\n' + String.quantity_string + answer.amount + ' ' + '\n\n' + String.confirmInsertLot_string
+				message: '\n' + myString.rawMaterial_string + ' ' +  answer.nome + '\n' + myString.footprint_string + ' ' + answer.footprint + '\n' + myString.quantity_string + answer.amount + ' ' + '\n\n' + myString.confirmInsertLot_string
 			}
 		];
 		inquirer.prompt(question2).then((answer2) => {
@@ -81,7 +81,7 @@ function add_raw_material() {
 				Model.GetLastID().then((last_id) => {
 					Model.AddRawMaterial(last_id, answer, myAccountAddress).then((result) => {
 						if (result) {
-							console.log('\n' + String.transactionPerformed_string);
+							console.log('\n' + myString.transactionPerformed_string);
 							Model.SearchByLot(last_id).then((result) => {
 								if (result) {
 									console.log();
@@ -98,7 +98,7 @@ function add_raw_material() {
 					});
 				});
 			} else {
-				console.log('\n' + String.transactionCanceled_string + '\n');
+				console.log('\n' + myString.transactionCanceled_string + '\n');
 				fornitore(myAccountAddress);
 			}
 		});
@@ -110,12 +110,12 @@ function search_name() {
 		{ 
 			type: 'input', 
 			name: 'nome', 
-			message: String.insertNameRawMaterial_string 
+			message: myString.insertNameRawMaterial_string 
 		}
 	];
 	inquirer.prompt(question).then((answer) => {
 		Model.SearchByName(answer.nome).then((result) => {
-			if (result) if (!Helper.print_lots(result, true)) console.log(String.unavailableLot_string);
+			if (result) if (!Helper.print_lots(result, true)) console.log(myString.unavailableLot_string);
 			console.log();
 			fornitore(myAccountAddress);
 		})
@@ -128,9 +128,9 @@ function search_lot() {
 		{ 
 			type: 'input', 
 			name: 'lotto', 
-			message: String.insertLotId_string,
+			message: myString.insertLotId_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return String.errorInvalidLotId_string;
+				if (isNaN(parseInt(answer))) return myString.errorInvalidLotId_string;
 				else return true;
 			} 
 		}

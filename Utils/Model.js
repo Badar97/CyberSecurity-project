@@ -1,10 +1,10 @@
 const fs = require("fs");
 const compiler = require("./Compiler.js");
-const Path = require("../Assets/path.js");
+const myString = require("../Assets/string.js");
 const Web3 = require("web3");
-let web3 = new Web3(Path.web3);
-let web3_2 = new Web3(Path.web3_2);
-let web3_3 = new Web3(Path.web3_3);
+let web3 = new Web3(myString.web3);
+let web3_2 = new Web3(myString.web3_2);
+let web3_3 = new Web3(myString.web3_3);
 const abi = compiler.compile("./CarbonFootprint/CarbonFootprint.sol")[0];  // PATH DA RIFERIRSI DAL PATH DI LANCIO
 const contractAddress = JSON.parse(fs.readFileSync('./CarbonFootprint/address.json'))[0]; // PATH DA RIFERIRSI DAL PATH DI LANCIO
 const myContract1 = new web3.eth.Contract(abi, contractAddress);
