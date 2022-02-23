@@ -3,6 +3,7 @@ const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Utils/Model.js');
 const Helper = require('../Utils/Helper.js');
+const String = require("../Assets/string.js");
 
 var myAccountAddress = null;
 
@@ -13,13 +14,13 @@ function fornitore(address) {
     var question = {
 		type: 'list',
 		name: 'action',
-		message: 'MENU\' FORNITORE',
+		message: String.menuFornitore_string,
 		choices: [
-			'INSERIMENTO DI MATERIE PRIME',
-			'RICERCA MATERIA PRIMA',
-			'RICERCA LOTTO',
-			'BACK',
-			'EXIT'
+			String.insertRawMaterial_string,
+			String.searchRawMaterial_string,
+			String.searchLot_string,
+			String.back_string,
+			String.exit_string
 		]
 	};
     
@@ -39,7 +40,7 @@ function add_raw_material() {
 		{ 
 			type: 'input', 
 			name: 'nome', 
-			message: 'MATERIA PRIMA',
+			message: String.rawMaterial_string,
 			validate: (answer) => {
 				if (!answer.length) return false;
 				return true;
@@ -48,20 +49,20 @@ function add_raw_material() {
 		{ 
 			type: 'input', 
 			name: 'footprint', 
-			message: 'FOOTPRINT', 
+			message: String.footprint_string, 
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return 'ERRORE - FOOTPRINT DEVE ESSERE UN NUMERO INTERO';
-				else if (parseInt(answer) < 0) return 'ERRORE - FOOTPRINT NON PUO\' AVERE UN VALORE NEGATIVO'
+				if (isNaN(parseInt(answer))) return String.errorFootprintInt_string;
+				else if (parseInt(answer) < 0) return String.errorFootprintNegative_string
 				return true;
 			} 
 		},	
 		{ 
 			type: 'input', 
 			name: 'amount', 
-			message: 'QUANTITA\'',
+			message: String.quantity_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return 'ERRORE - QUANTITA\' DEVE ESSERE UN NUMERO INTERO';
-				else if (parseInt(answer) <= 0) return 'ERRORE - QUANTITA\' DEVE ESSERE MAGGIORE DI 0'
+				if (isNaN(parseInt(answer))) return String.errorQuantityInt_string;
+				else if (parseInt(answer) <= 0) return String.errorQuantityPositive_string
 				return true;
 			}
 		}
@@ -72,7 +73,7 @@ function add_raw_material() {
 			{ 
 				type: 'confirm', 
 				name: 'confirm', 
-				message: '\nMATERIA PRIMA: ' + answer.nome + '\nFOOTPRINT: ' + answer.footprint + '\nQUANTITA\': ' + answer.amount + '\n\nSEI SICURO DI VOLER INSERIRE QUESTO LOTTO?'
+				message: '\n' + String.rawMaterial_string + ' ' +  answer.nome + '\n' + String.footprint_string + ' ' + answer.footprint + '\n' + String.quantity_string + answer.amount + ' ' + '\n\n' + String.confirmInsertLot_string
 			}
 		];
 		inquirer.prompt(question2).then((answer2) => {
@@ -80,7 +81,7 @@ function add_raw_material() {
 				Model.GetLastID().then((last_id) => {
 					Model.AddRawMaterial(last_id, answer, myAccountAddress).then((result) => {
 						if (result) {
-							console.log('\nTRANSAZIONE ESEGUITA');
+							console.log('\n' + String.transactionPerformed_string);
 							Model.SearchByLot(last_id).then((result) => {
 								if (result) {
 									console.log();
@@ -97,7 +98,7 @@ function add_raw_material() {
 					});
 				});
 			} else {
-				console.log('\nTRANSAZIONE ANNULLATA\n');
+				console.log('\n' + String.transactionCanceled_string + '\n');
 				fornitore(myAccountAddress);
 			}
 		});
@@ -109,12 +110,12 @@ function search_name() {
 		{ 
 			type: 'input', 
 			name: 'nome', 
-			message: 'INSERISCI IL NOME DELLA MATERIA PRIMA: ' 
+			message: String.insertNameRawMaterial_string 
 		}
 	];
 	inquirer.prompt(question).then((answer) => {
 		Model.SearchByName(answer.nome).then((result) => {
-			if (result) if (!Helper.print_lots(result, true)) console.log('NESSUN LOTTO DISPONIBILE');
+			if (result) if (!Helper.print_lots(result, true)) console.log(String.unavailableLot_string);
 			console.log();
 			fornitore(myAccountAddress);
 		})
@@ -127,9 +128,9 @@ function search_lot() {
 		{ 
 			type: 'input', 
 			name: 'lotto', 
-			message: 'INSERISCI IL CODICE DI LOTTO: ',
+			message: String.insertLotId_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return 'ERRORE - CODICE LOTTO NON VALIDO';
+				if (isNaN(parseInt(answer))) return String.errorInvalidLotId_string;
 				else return true;
 			} 
 		}

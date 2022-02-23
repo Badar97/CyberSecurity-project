@@ -3,6 +3,7 @@ const table_printer = require('console-table-printer');
 const Interface = require('../Interface.js');
 const Model = require('../Utils/Model.js');
 const Helper = require('../Utils/Helper.js');
+const String = require("../Assets/string.js");
 
 var myAccountAddress = null;
 
