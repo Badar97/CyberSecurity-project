@@ -16,12 +16,11 @@ function trasformatore(address) {
             name: 'action',
             message: myString.menuTrasformatore_string,
             choices: [
-                myString.searchRawMaterial_string,
-                myString.searchLot_string,
                 myString.purchaseRawMaterial_string,
                 myString.viewLotsPurchased_string,
                 myString.insertProduct_string,
                 myString.transformation_string,
+                myString.searchLot_string,
                 myString.back_string,
                 myString.exit_string
             ]
@@ -29,33 +28,15 @@ function trasformatore(address) {
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: search_name(); break;
-            case question.choices[1]: search_lot(); break;
-            case question.choices[2]: purchase_material(); break;
-            case question.choices[3]: check_lots(); break;
-            case question.choices[4]: add_product(); break;
-            case question.choices[5]: transformation(); break;
-            case question.choices[6]: Interface.interface(); break;
-            case question.choices[7]: default: return;
+            case question.choices[0]: purchase_material(); break;
+            case question.choices[1]: check_lots(); break;
+            case question.choices[2]: add_product(); break;
+            case question.choices[3]: transformation(); break;
+            case question.choices[4]: search_lot(); break;
+            case question.choices[5]: Interface.interface(); break;
+            case question.choices[6]: default: return;
         }
     });
-}
-
-function search_name() {
-	var question = [
-		{ 
-			type: 'input', 
-			name: 'nome', 
-			message: myString.insertNameRawMaterial_string 
-		}
-	];
-	inquirer.prompt(question).then((answer) => {
-		Model.SearchByName(answer.nome).then((result) => {
-			if (result) if (!Helper.print_lots(result, true)) console.log(myString.unavailableLot_string);
-			console.log();
-			trasformatore(myAccountAddress);
-		})
-	});
 }
 
 function search_lot() {
@@ -97,7 +78,7 @@ function purchase_material() {
         Model.SearchByName(answer.nome).then((result) => {
 			if (result) {
                 var id = [];
-                result.forEach(element => { if (!element.sold) id.push(element.id) });
+                result.forEach(element => { if (!element.sold && element.residual_amount > 0) id.push(element.id) });
                 if (!Helper.print_lots(result, true)) {
                     console.log(myString.unavailableLot_string + '\n');
                     trasformatore(myAccountAddress);
@@ -173,7 +154,7 @@ function add_product(){
         Model.CheckMyLots(myAccountAddress).then((result) => {
 
             var id = [];
-            result.forEach(element => { if(element.residual_amount !=0) id.push(element.id) }); 
+            result.forEach(element => { if (element.residual_amount > 0) id.push(element.id) }); 
 
             add_product_details(id, result, choice_array, answer);
 
@@ -251,11 +232,11 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
                         add_product_details(new_id, new_array, choice_array, answer);  
                     } else add_product_details(id_array, lot_array, choice_array, answer);  
                 });
-            } else if(!choice_array[0].length && answer2.lotto != myString.cancel_string) {
+            } else if (!choice_array[0].length && answer2.lotto == myString.end_string) {
                 console.log('\n' + myString.mustSelectrawMaterial_string);
                 add_product_details(id_array, lot_array, choice_array, answer);
-            } else if (answer2.lotto == myString.exit_string) {
-                console.log();
+            } else if (answer2.lotto == myString.cancel_string) {
+                console.log('\n' + myString.transactionCanceled_string + '\n');
 				trasformatore(myAccountAddress);
             } else {
                 Model.GetLastID().then((last_id) => {
@@ -289,7 +270,7 @@ function transformation(){
 		console.log();
 
         var id = [];
-        result.forEach(element => { if(element.residual_amount !=0) id.push(element.id) }); 
+        result.forEach(element => { if (element.residual_amount > 0) id.push(element.id) }); 
 
         var question = [
             { 

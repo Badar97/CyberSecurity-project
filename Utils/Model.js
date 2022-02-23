@@ -12,7 +12,7 @@ const myContract2 = new web3_2.eth.Contract(abi, contractAddress);
 const myContract3 = new web3_3.eth.Contract(abi, contractAddress);
 
 function print_error(error) {
-	console.log('\n' + error.toString().slice());
+	console.log('\n' + error.toString().slice(43));
 }
 
 //MODEL FORNITORE

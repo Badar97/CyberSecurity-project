@@ -17,9 +17,9 @@ function fornitore(address) {
 		message: myString.menuFornitore_string,
 		choices: [
 			myString.insertRawMaterial_string,
+			myString.viewLotsPurchased_string,
 			myString.searchRawMaterial_string,
 			myString.searchLot_string,
-			myString.viewLotsPurchased_string,
 			myString.back_string,
 			myString.exit_string
 		]
@@ -28,9 +28,9 @@ function fornitore(address) {
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
             case question.choices[0]: add_raw_material(); break;
-			case question.choices[1]: search_name(); break;
-			case question.choices[2]: search_lot(); break;
-			case question.choices[3]: check_lots(); break;
+			case question.choices[1]: check_lots(); break;
+			case question.choices[2]: search_name(); break;
+			case question.choices[3]: search_lot(); break;
 			case question.choices[4]: Interface.interface(); break;
             case question.choices[5]: default: return;
         }
@@ -124,6 +124,15 @@ function search_name() {
 	});
 }
 
+
+function check_lots() {
+    Model.CheckMyLots(myAccountAddress).then((result) => {
+        if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
+		console.log();
+		fornitore(myAccountAddress);
+    });
+}
+
 function search_lot() {
 	
 	var question = [
@@ -149,14 +158,6 @@ function search_lot() {
 			fornitore(myAccountAddress);
 		});
 	});
-}
-
-function check_lots() {
-    Model.CheckMyLots(myAccountAddress).then((result) => {
-        if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
-		console.log();
-		fornitore(myAccountAddress);
-    });
 }
 
 exports.fornitore = fornitore;
