@@ -25,12 +25,24 @@ web3.eth.getAccounts().then((value) => {
 
 function deploy(address) {
 	console.log(myString.usedAccount_string + address);
-	var values1 = compiler.compile("./CarbonFootprint/CarbonFootprint.sol"); 
+
+	// CarbonFootprint
+	var values1 = compiler.compile("./Contracts/CarbonFootprint/CarbonFootprint.sol"); 
 	var contract1 = new web3.eth.Contract(values1[0]);
 	var wallets = JSON.parse(fs.readFileSync('./Assets/wallets.json'));
 	contract1.deploy({ data: "0x" + values1[1], arguments: wallets}).send({ from: address }).then(function(newContractInstance){
 		console.log(values1[2] + ' - ' + myString.deployCompleted_string);
 		console.log(values1[2] + ' - ' + myString.addressContract_string + newContractInstance.options.address);
-		fs.writeFileSync('./CarbonFootprint/address.json', '[\n"' + newContractInstance.options.address + '"\n]');
+		fs.writeFileSync('./Contracts/CarbonFootprint/address.json', '[\n"' + newContractInstance.options.address + '"\n]');
 	});
+
+	// NFT_Footprint
+	var values2 = compiler.compile("./Contracts/NFT_Footprint/NFT_Footprint.sol"); 
+	var contract2 = new web3.eth.Contract(values2[0]);
+	contract2.deploy({ data: "0x" + values2[1], arguments: wallets}).send({ from: address }).then(function(newContractInstance){
+		console.log(values2[2] + ' - ' + myString.deployCompleted_string);
+		console.log(values2[2] + ' - ' + myString.addressContract_string + newContractInstance.options.address);
+		fs.writeFileSync('./Contracts/NFT_Footprint/address.json', '[\n"' + newContractInstance.options.address + '"\n]');
+	});
+
 }

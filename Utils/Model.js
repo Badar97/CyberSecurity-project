@@ -5,14 +5,14 @@ const Web3 = require("web3");
 let web3 = new Web3(myString.web3);
 let web3_2 = new Web3(myString.web3_2);
 let web3_3 = new Web3(myString.web3_3);
-const abi = compiler.compile("./CarbonFootprint/CarbonFootprint.sol")[0];  // PATH DA RIFERIRSI DAL PATH DI LANCIO
-const contractAddress = JSON.parse(fs.readFileSync('./CarbonFootprint/address.json'))[0]; // PATH DA RIFERIRSI DAL PATH DI LANCIO
+const abi = compiler.compile("./Contracts/CarbonFootprint/CarbonFootprint.sol")[0];  // PATH DA RIFERIRSI DAL PATH DI LANCIO
+const contractAddress = JSON.parse(fs.readFileSync('./Contracts/CarbonFootprint/address.json'))[0]; // PATH DA RIFERIRSI DAL PATH DI LANCIO
 const myContract1 = new web3.eth.Contract(abi, contractAddress);
 const myContract2 = new web3_2.eth.Contract(abi, contractAddress);
 const myContract3 = new web3_3.eth.Contract(abi, contractAddress);
 
 function print_error(error) {
-	console.log('\n' + error.toString().slice(43));
+	console.log('\n' + error.toString().slice(0));
 }
 
 //MODEL FORNITORE
@@ -78,20 +78,10 @@ async function PurchaseLot(ids, myAccountAddress) {
     return result;
 }
 
-async function AddProduct(id, name, array, amount, myAccountAddress) {
+async function AddProduct(id, name, array, amount, footprint, myAccountAddress) {
 	var result = null;
 	try {
-		await myContract2.methods.AddProduct(id, name, array, amount).send({from: myAccountAddress}).then((response) => {
-			result = response;
-		});
-	} catch (error) { print_error(error) }
-    return result;
-}
-
-async function TrasformationLot(id, footprint , myAccountAddress) {
-	var result = null;
-	try {
-		await myContract2.methods.TrasformationLot(id, footprint).send({from: myAccountAddress}).then((response) => {
+		await myContract2.methods.AddProduct(id, name, array, amount, footprint).send({from: myAccountAddress}).then((response) => {
 			result = response;
 		});
 	} catch (error) { print_error(error) }
@@ -118,5 +108,4 @@ exports.SearchByLot = SearchByLot;
 exports.CheckMyLots = CheckMyLots;
 exports.PurchaseLot = PurchaseLot;
 exports.AddProduct = AddProduct;
-exports.TrasformationLot = TrasformationLot;
 exports.CheckBuyableLots = CheckBuyableLots;

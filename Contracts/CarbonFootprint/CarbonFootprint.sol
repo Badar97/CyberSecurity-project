@@ -37,6 +37,17 @@ contract CarbonFootprint {
         transformer = _transformer;
         customer = _customer;
         id_lot = 1;
+
+        AddRawMaterial(id_lot, 'FARINA', 100, 100);
+        AddRawMaterial(id_lot, 'SALE', 100, 100);
+        AddRawMaterial(id_lot, 'PEPE', 100, 100);
+        AddRawMaterial(id_lot, 'POMODORI', 100, 100);
+        AddRawMaterial(id_lot, 'FARINA', 100, 100);
+        AddRawMaterial(id_lot, 'GRANO', 100, 100);
+        AddRawMaterial(id_lot, 'UOVA', 100, 100);
+        AddRawMaterial(id_lot, 'FARINA', 100, 100);
+        AddRawMaterial(id_lot, 'UOVA', 100, 100);
+        AddRawMaterial(id_lot, 'PEPE', 100, 100);
     }
 
     // INSERIMENTO NUOVA MATERIA PRIMA (FORNITORE)
@@ -49,7 +60,7 @@ contract CarbonFootprint {
     function getLastID() public view returns (uint256 id) {
         return id_lot;
     }  
-    function AddLot(uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) public {
+    function AddLot(uint _id, string memory _name, uint  _carbonfootprint, uint  _amount) private {
 
         id_lot = _id + 1;
 
@@ -109,7 +120,7 @@ contract CarbonFootprint {
     }
 
     //INSERIMENTO NUOVO PRODOTTO (TRASFORMATORE)
-    function AddProduct(uint _id, string memory _name, uint[][] memory _lot_amount, uint  _amount) public {
+    function AddProduct(uint _id, string memory _name, uint[][] memory _lot_amount, uint  _amount, uint _footprint) public {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
 
         uint256 _total_carbonfootprint = 0;
@@ -126,17 +137,11 @@ contract CarbonFootprint {
             uint lot_carbonfootprint = lot.carbonfootprint;
             uint lot_amount = lot.amount;
             uint amount_used = _lot_amount[1][i];
-            _total_carbonfootprint += (lot_carbonfootprint / lot_amount * amount_used);
+            _total_carbonfootprint += lot_carbonfootprint / lot_amount * amount_used + _footprint;
             getLotByID[_lot_amount[0][i]].residual_amount -= _lot_amount[1][i];
         }
 
         AddLot(_id, _name, _total_carbonfootprint, _amount);
-    }
-
-    //FUNZIONE DI TRASFORMAZIONE LOTTO (TRASFORMATORE)
-    function TrasformationLot(uint _id, uint _footprint) public {
-        require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
-        getLotByID[_id].carbonfootprint += _footprint;
     }
 
     //FUNZIONE CHE RITORNA TUTTI I LOTTI ACQUISTABILI (CLIENTE)

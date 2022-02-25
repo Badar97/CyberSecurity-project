@@ -47,6 +47,7 @@ exports.witchRawMaterial_string = 'QUALE MATERIA PRIMA VUOI ACQUISTARE? ';
 exports.selectLotsToPuschase_string = 'SELEZIONA I LOTTI CHE VUOI ACQUISTARE';
 exports.noneLotPurchase_string = 'NESSUN LOTTO DI TUA PROPRIETA\'';
 exports.nameProduct_string = 'NOME PRODOTTO';
+exports.transformationFootprint_string = 'FOOTPRINT EMESSO DA TRASFORMAZIONE/TRASPORTO';
 exports.selectLotTakeRawMaterial_string = 'SELEZIONA IL LOTTO DA CUI PRELEVARE MATERIE PRIME';
 exports.end_string = 'FINE';
 exports.cancel_string = 'ANNULLA';
@@ -56,7 +57,6 @@ exports.errorResidualQuantity_string = 'ERRORE - LA QUANTITA\' NON PUO\' SUPERAR
 exports.errorResidualQuantityFinal_string = ')';
 exports.confirm_string = 'SEI SICURO?';
 exports.mustSelectrawMaterial_string = 'DEVI SELEZIONARE ALMENO UNA MATERIA PRIMA';
-exports.transformation_string = 'TRASFORMAZIONE';
 exports.selectLotToTransform_string = 'SELEZIONA IL LOTTO CHE VUOI TRANSFORMARE';
 exports.insertFootprintTransform_string = 'INSERISCI IL FOOTPRINT ASSOCIATO ALLA TRASFORMAZIONE';
 
