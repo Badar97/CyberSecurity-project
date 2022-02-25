@@ -19,16 +19,12 @@ function compile(filepath) {
     	content: fs.readFileSync(filepath).toString()
     };
     
-    // console.log("INPUT:", input);
-    
-    var output = JSON.parse(solc.compile(JSON.stringify(input)));
-    
-    // console.log("OUTPUT:", output);
+    var output = JSON.parse(solc.compile(JSON.stringify(input), { import: findImports }));
     
     let bytecode = null;
     let abi = null;
     let name = ''
-    // `output` here contains the JSON output as specified in the documentation
+
     for (var contractName in output.contracts[filepath]) {
     	bytecode = output.contracts[filepath][contractName].evm.bytecode.object;
     	abi = output.contracts[filepath][contractName].abi;
@@ -39,5 +35,10 @@ function compile(filepath) {
 
 }
 
+function findImports(path) {
+  return {
+      'contents': fs.readFileSync(path).toString()
+  }
+}
 
 exports.compile = compile;

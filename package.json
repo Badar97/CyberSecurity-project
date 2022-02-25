@@ -1,20 +1,17 @@
 {
-  "name": "bcdemo",
+  "name": "cfbp",
   "version": "1.0.0",
-  "description": "A demo for managing smart contracts using javascript",
-  "main": "demo1.js",
+  "description": "CarbonFootprint blockchain project",
+  "main": "Interface.js",
   "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
     "console-table-printer": "^2.10.0",
     "inquirer": "^8.2.0",
     "quorum-js": "^0.3.6",
     "readline-sync": "^1.4.10",
     "solc": "^0.8.11",
-    "terminal-menu": "^2.1.1",
     "web3": "^1.7.0"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Francesco Spegni",
+  "author": "Gruppo 6",
   "license": "ISC"
 }

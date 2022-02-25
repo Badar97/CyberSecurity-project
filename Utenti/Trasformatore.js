@@ -52,7 +52,7 @@ function search_lot() {
 	]
 
 	inquirer.prompt(question).then((answer) => {
-		Model.SearchByLot(answer.lotto).then((result) => {
+		Model.searchByLot(answer.lotto).then((result) => {
 			if (result) {
 				console.log();
 				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
@@ -73,7 +73,7 @@ function purchase_material() {
         }
 	];
 	inquirer.prompt(question).then((answer) => {
-        Model.SearchByName(answer.nome).then((result) => {
+        Model.searchByName(answer.nome).then((result) => {
 			if (result) {
                 var id = [];
                 result.forEach(element => { if (!element.sold && element.residual_amount > 0) id.push(element.id) });
@@ -96,7 +96,7 @@ function purchase_material() {
                             console.log();
                             trasformatore(myAccountAddress);
                         } else {
-                            Model.PurchaseLot(answer.lotti, myAccountAddress).then((result) => {
+                            Model.purchaseLot(answer.lotti, myAccountAddress).then((result) => {
                                 if (result) console.log('\n' + myString.transactionPerformed_string);
                                 console.log();
                                 trasformatore(myAccountAddress);
@@ -113,7 +113,7 @@ function purchase_material() {
 }
 
 function check_lots() {
-    Model.CheckMyLots(myAccountAddress).then((result) => {
+    Model.checkMyLots(myAccountAddress).then((result) => {
         if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
 		console.log();
 		trasformatore(myAccountAddress);
@@ -159,7 +159,7 @@ function add_product(){
     choice_array[1] = new Array();
 
     inquirer.prompt(question).then((answer) => {
-        Model.CheckMyLots(myAccountAddress).then((result) => {
+        Model.checkMyLots(myAccountAddress).then((result) => {
 
             var id = [];
             result.forEach(element => { if (element.residual_amount > 0) id.push(element.id) }); 
@@ -247,15 +247,25 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
                 console.log('\n' + myString.transactionCanceled_string + '\n');
 				trasformatore(myAccountAddress);
             } else {
-                Model.GetLastID().then((last_id) => {
-                    Model.AddProduct(last_id, answer.nome.toUpperCase(), choice_array, answer.amount, answer.footprint, myAccountAddress).then((result) => {
+                Model.getLastID().then((last_id) => {
+                    Model.addProduct(last_id, answer.nome.toUpperCase(), choice_array, answer.amount, answer.footprint, myAccountAddress).then((result) => {
 						if (result) {
 							console.log('\n' + myString.transactionPerformed_string);
-							Model.SearchByLot(last_id).then((result) => {
+							Model.searchByLot(last_id).then((result) => {
                                 if (result) {
 									console.log();
 									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
 									table_printer.printTable(table);
+                                    console.log();
+                                    Model.mintNFT(myAccountAddress).then((result) => {
+                                        if (result) {
+                                            Model.getTokenID(myAccountAddress).then((result) => {
+                                                if (result) {
+                                                    console.log(result);
+                                                }
+                                            })
+                                        }
+                                    })
 								}
 								console.log();
 						        trasformatore(myAccountAddress);	

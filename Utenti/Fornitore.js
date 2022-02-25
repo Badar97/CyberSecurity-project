@@ -80,11 +80,11 @@ function add_raw_material() {
 		];
 		inquirer.prompt(question2).then((answer2) => {
 			if (answer2.confirm) {
-				Model.GetLastID().then((last_id) => {
-					Model.AddRawMaterial(last_id, answer, myAccountAddress).then((result) => {
+				Model.getLastID().then((last_id) => {
+					Model.addRawMaterial(last_id, answer, myAccountAddress).then((result) => {
 						if (result) {
 							console.log('\n' + myString.transactionPerformed_string);
-							Model.SearchByLot(last_id).then((result) => {
+							Model.searchByLot(last_id).then((result) => {
 								if (result) {
 									console.log();
 									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
@@ -116,7 +116,7 @@ function search_name() {
 		}
 	];
 	inquirer.prompt(question).then((answer) => {
-		Model.SearchByName(answer.nome).then((result) => {
+		Model.searchByName(answer.nome).then((result) => {
 			if (result) if (!Helper.print_lots(result, true)) console.log(myString.unavailableLot_string);
 			console.log();
 			fornitore(myAccountAddress);
@@ -126,7 +126,7 @@ function search_name() {
 
 
 function check_lots() {
-    Model.CheckMyLots(myAccountAddress).then((result) => {
+    Model.checkMyLots(myAccountAddress).then((result) => {
         if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
 		console.log();
 		fornitore(myAccountAddress);
@@ -148,7 +148,7 @@ function search_lot() {
 	]
 
 	inquirer.prompt(question).then((answer) => {
-		Model.SearchByLot(answer.lotto).then((result) => {
+		Model.searchByLot(answer.lotto).then((result) => {
 			if (result) {
 				console.log();
 				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];

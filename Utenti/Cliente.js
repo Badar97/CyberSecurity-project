@@ -24,15 +24,15 @@ function cliente(address) {
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: PurchaseMaterial(); break;
+            case question.choices[0]: purchase_material(); break;
             case question.choices[1]: Interface.interface(); break;
             case question.choices[2]: default: return;
         }
     });
 }
 
-function PurchaseMaterial(){
-    Model.CheckBuyableLots().then((result) => { 
+function purchase_material(){
+    Model.checkBuyableLots().then((result) => { 
         if (result) {
             var id = [];
             result.forEach(element => { if (!element.sold && element.amount > 0) id.push(element.id) });
