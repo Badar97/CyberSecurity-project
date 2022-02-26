@@ -42,7 +42,7 @@ function purchase_material() {
 		{ 
             type: 'input', 
             name: 'nome', 
-            message: myString.witchRawMaterial_string
+            message: myString.whichRawMaterial_string
         }
 	];
 	inquirer.prompt(question).then((answer) => {
@@ -59,7 +59,7 @@ function purchase_material() {
                         {
                             type: 'checkbox',
                             name: 'lotti',
-                            message: '\n' + myString.selectLotsToPuschase_string,
+                            message: myString.selectLotsToPuschase_string,
                             choices: id
                         }
                     ]

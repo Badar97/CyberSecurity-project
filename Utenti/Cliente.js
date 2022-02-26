@@ -24,62 +24,93 @@ function cliente(address) {
     
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
-            case question.choices[0]: purchase_material(); break;
+            case question.choices[0]: purchase_product(); break;
             case question.choices[1]: Interface.interface(); break;
             case question.choices[2]: default: return;
         }
     });
 }
 
-function purchase_material(){
-    /*
-    Model.checkBuyableLots().then((result) => { 
-        if (result) {
-            var id = [];
-            result.forEach(element => { if (!element.sold && element.amount > 0) id.push(element.id) });
-            if (!Helper.print_lots(result, true)) {
-                console.log(myString.unavailableLot_string + '\n');
-                cliente(myAccountAddress);
+function purchase_product() {
+    var question = [
+		{ 
+            type: 'input', 
+            name: 'nome', 
+            message: myString.whichRawMaterial_string
+        }
+	];
+	inquirer.prompt(question).then((answer) => {
+        Model.searchByName(answer.nome).then((result) => {
+			if (result) {
+                var id = [];
+                result.forEach(element => { if (!element.sold && element.residual_amount > 0) id.push(element.id) });
+                if (!Helper.print_lots(result, true)) {
+                    console.log(myString.unavailableLot_string + '\n');
+                    cliente(myAccountAddress);
+                } else {
+                    console.log();
+                    var question = [
+                        {
+                            type: 'list',
+                            name: 'lotti',
+                            message: myString.selectLotsToPuschase_string,
+                            choices: [...id, ...[myString.cancel_string]]
+                        }
+                    ]
+                    var question2 = [
+                        {
+                            type: 'confirm',
+                            name: 'confirm',
+                            message: myString.confirm_string
+                        }
+                    ]
+                    inquirer.prompt(question).then((answer) => {
+                        if (answer.lotti != myString.cancel_string) {
+                            inquirer.prompt(question2).then((answer2) => {
+                                if (answer2.confirm) {
+                                    Model.buyProduct(answer.lotti, myAccountAddress).then((result) => {
+                                        if (result) {
+                                            console.log('\n' + myString.transactionPerformed_string + '\n');
+                                            Model.getTokenArray(myAccountAddress).then((result) => {
+                                                if (result) {
+                                                    Model.getTokenURI(result[result.length-1]).then((result) => {
+                                                        if (result) {
+                                                            console.log('--- NFT ---\n');
+                                                            console.log(JSON.parse(result));
+                                                            console.log();
+                                                            cliente(myAccountAddress);
+                                                        } else {
+                                                            console.log();
+                                                            cliente(myAccountAddress);
+                                                        }
+                                                    })
+                                                } else {
+                                                    console.log();
+                                                    cliente(myAccountAddress);
+                                                }
+                                            })
+                                        } else {
+                                            console.log();
+                                            cliente(myAccountAddress);
+                                        }
+                                    })
+                                } else {
+                                    console.log('\n' + myString.transactionCanceled_string + '\n');
+                                    cliente(myAccountAddress);
+                                }
+                            })
+                        } else {
+                            console.log('\n' + myString.transactionCanceled_string + '\n');
+                            cliente(myAccountAddress);
+                        }
+                    });
+                }
             } else {
                 console.log();
-                var question = [
-                    {
-                        type: 'list',
-                        name: 'lotto',
-                        message: '\n' + myString.selectLotsToPuschase_string,
-                        choices: id
-                    },
-                    {
-                        type: 'confirm',
-                        name: 'confirm',
-                        message: '\n' + myString.confirm_string,
-                    }
-                ]
-                
-                inquirer.prompt(question).then((answer) => {
-                    
-                });
+                cliente(myAccountAddress);
             }
-        } else {
-            console.log();
-            cliente(myAccountAddress);
-        }
-    })
-    */
-
-    Model.buyProduct(1, myAccountAddress).then((result) => {
-        if (result) {
-            Model.getTokenArray(myAccountAddress).then((result) => {
-                if (result) console.log(result);
-                Model.getTokenURI(result[0]).then((result) => {
-                    if (result) {
-                        console.log('NFT: ');
-                        console.log(result);
-                    }
-                })
-            })
-        }
-    })
+		});
+    });		
 }
 
 exports.cliente = cliente;

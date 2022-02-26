@@ -34,7 +34,7 @@ contract NFT_Footprint is ERC721, ERC721Enumerable, Ownable {
             abi.encodePacked(
                 '{',
                 ' "id" : "', uint2str(tokenId), '",',
-                ' "attributes" : [{ "nome" : "', attributes[tokenId].name, '"}, { "footprint" : "', uint2str(attributes[tokenId].footprint), '"}]',             
+                ' "attributes" : [{ "name" : "', attributes[tokenId].name, '"}, { "footprint" : "', uint2str(attributes[tokenId].footprint), '"}]',             
                 '}'
             )
         );

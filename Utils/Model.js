@@ -125,7 +125,15 @@ async function getTokenURI(token_ID) {
     return result;
 }
 
-
+async function getURIsByAddress(myAccountAddress) {
+	var result = null;
+	try {
+		await CarbonFootprint3.methods.getURIsByAddress(myAccountAddress).call().then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error) }
+    return result;
+}
 
 exports.getLastID = getLastID;
 exports.addRawMaterial = addRawMaterial;
@@ -134,7 +142,7 @@ exports.searchByLot = searchByLot;
 exports.checkMyLots = checkMyLots;
 exports.purchaseLot = purchaseLot;
 exports.addProduct = addProduct;
-
 exports.buyProduct = buyProduct;
 exports.getTokenArray = getTokenArray;
 exports.getTokenURI = getTokenURI;
+exports.getURIsByAddress = getURIsByAddress;

@@ -87,12 +87,12 @@ contract CarbonFootprint is NFT_Footprint {
         getLotByAddress[msg.sender].push(_id);
     }
 
-    function searchInfoLot(uint _lot) public view returns (Lot memory material) {
+    function searchInfoLot(uint _lot) public view returns (Lot memory) {
          require (existLot[_lot], "LOTTO NON ESISTENTE");
          return getLotByID[_lot] ;
     }
 
-    function searchLotsByRawMaterialName(string memory _name) public view returns (Lot[] memory lot) {
+    function searchLotsByRawMaterialName(string memory _name) public view returns (Lot[] memory) {
         require (existRawMaterial[_name], "NESSUN LOTTO CONTIENE QUESTA MATERIA PRIMA");
         uint size = getLotByRawMaterialName[_name].length;
         Lot[] memory temp = new Lot[](size);
@@ -114,7 +114,7 @@ contract CarbonFootprint is NFT_Footprint {
         }      
     }
 
-    function checkMyLots(address _add) public view returns (Lot[] memory lot) {
+    function checkMyLots(address _add) public view returns (Lot[] memory) {
         require (_add == transformer || _add == supplier , "ERRORE - SOLO I TRASFORMATORI/FORNITORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         uint size = getLotByAddress[_add].length;
         Lot[] memory temp = new Lot[](size);
@@ -152,11 +152,8 @@ contract CarbonFootprint is NFT_Footprint {
     // ACQUISTO PRODOTTO FINITO (CLIENTE)
     function buyProduct(uint _id) public {
         require (msg.sender == customer, "ERRORE - SOLO I CLIENTI POSSONO ESEGUIRE QUESTA FUNZIONE");
-
         getLotByID[_id].residual_amount -= 1;
-
-        uint new_id = mint(msg.sender, getLotByID[_id].name, getLotByID[_id].carbonfootprint);
-        
+        uint new_id = mint(msg.sender, getLotByID[_id].name, getLotByID[_id].carbonfootprint/getLotByID[_id].amount);
         getTokenIDByAddress[msg.sender].push(new_id);
     }
 
@@ -166,6 +163,15 @@ contract CarbonFootprint is NFT_Footprint {
 
     function getTokenURI(uint _tokenID) public view returns (string memory) {
         return tokenURI(_tokenID);
+    }
+
+    function getURIsByAddress(address _add) public view returns (string[] memory) {
+        uint size = getTokenIDByAddress[_add].length;
+        string[] memory nft_string = new string[](size);
+        for (uint i = 0; i < size; i++) {
+            nft_string[i] = tokenURI(getTokenIDByAddress[_add][i]);
+        }
+        return nft_string;
     }
 }
 
