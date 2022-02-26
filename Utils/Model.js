@@ -12,31 +12,16 @@ const CarbonFootprint1 = new web3.eth.Contract(abi_cf, contractAddress_cf);
 const CarbonFootprint2 = new web3_2.eth.Contract(abi_cf, contractAddress_cf);
 const CarbonFootprint3 = new web3_3.eth.Contract(abi_cf, contractAddress_cf);
 
-const abi_nftcf = compiler.compile("./Contracts/NFT_Footprint/NFT_Footprint.sol")[0];  // PATH RELATIVO ALLA DIRECTORY DI LANCIO
-const contractAddress_nftcf = JSON.parse(fs.readFileSync('./Contracts/NFT_Footprint/address.json'))[0]; // PATH RELATIVO ALLA DIRECTORY DI LANCIO
-const NFT_Footprint1 = new web3.eth.Contract(abi_nftcf, contractAddress_nftcf);
-const NFT_Footprint2 = new web3_2.eth.Contract(abi_nftcf, contractAddress_nftcf);
-const NFT_Footprint3 = new web3_3.eth.Contract(abi_nftcf, contractAddress_nftcf);
-
 function print_error(error) {
 	console.log('\n' + error.toString().slice(43));
 }
 
-//MODEL FORNITORE
+//MODEL GENERICO
+
 async function getLastID() {
 	var result = null;
 	try {
 		await CarbonFootprint1.methods.getLastID().call().then((response) => {
-			result = response;
-		});
-	} catch (error) { print_error(error) }
-	return result;
-}
-
-async function addRawMaterial(last_id, answer, myAccountAddress) {
-	var result = null;
-	try {
-		await CarbonFootprint1.methods.addRawMaterial(last_id, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}).then((response) => {
 			result = response;
 		});
 	} catch (error) { print_error(error) }
@@ -63,17 +48,30 @@ async function searchByLot(lot_id) {
 	return result;	
 }
 
-//MODEL TRASFORMATORE
-
 async function checkMyLots(myAccountAddress) {
 	var result = null;
 	try {
-		await CarbonFootprint2.methods.checkMyLots(myAccountAddress).call().then((response) => {
+		await CarbonFootprint1.methods.checkMyLots(myAccountAddress).call().then((response) => {
 			result = response;
 		});
 	} catch (error) { print_error(error) }
 	return result;	
 }
+
+// MODEL FORNITORE
+
+async function addRawMaterial(last_id, answer, myAccountAddress) {
+	var result = null;
+	try {
+		await CarbonFootprint1.methods.addRawMaterial(last_id, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}).then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error) }
+	return result;
+}
+
+
+//MODEL TRASFORMATORE
 
 async function purchaseLot(ids, myAccountAddress) {
 	var result = null;
@@ -95,37 +93,8 @@ async function addProduct(id, name, array, amount, footprint, myAccountAddress) 
     return result;
 }
 
-async function mintNFT(myAccountAddress) {
-	var result = null;
-	try {
-		await NFT_Footprint2.methods.safeMint(myAccountAddress).send({ from: myAccountAddress }).then((response) => {
-			result = response;
-		});
-	} catch (error) { print_error(error) }
-    return result;
-}
-
-async function getTokenID(myAccountAddress) {
-	var result = null;
-	try {
-		await NFT_Footprint2.methods.returnBalance(myAccountAddress).call().then((response) => {
-			result = response;
-		});
-	} catch (error) { print_error(error) }
-    return result;
-}
-
 //MODEL CLIENTE
 
-async function checkBuyableLots() {
-	var result = null;
-	try {
-		await CarbonFootprint3.methods.checkBuyableLots().call().then((response) => {
-			result = response;
-		});
-	} catch (error) { print_error(error) }
-    return result;
-}
 
 
 exports.getLastID = getLastID;
@@ -135,6 +104,3 @@ exports.searchByLot = searchByLot;
 exports.checkMyLots = checkMyLots;
 exports.purchaseLot = purchaseLot;
 exports.addProduct = addProduct;
-exports.getTokenID = getTokenID;
-exports.mintNFT = mintNFT;
-exports.checkBuyableLots = checkBuyableLots;

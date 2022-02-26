@@ -28,40 +28,13 @@ function trasformatore(address) {
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
             case question.choices[0]: purchase_material(); break;
-            case question.choices[1]: check_lots(); break;
+            case question.choices[1]: Helper.check_lots(myAccountAddress, trasformatore); break;
             case question.choices[2]: add_product(); break;
-            case question.choices[3]: search_lot(); break;
+            case question.choices[3]: Helper.search_lot(myAccountAddress, trasformatore); break;
             case question.choices[4]: Interface.interface(); break;
             case question.choices[5]: default: return;
         }
     });
-}
-
-function search_lot() {
-	
-	var question = [
-		{ 
-			type: 'input', 
-			name: 'lotto', 
-			message: myString.insertLotId_string,
-			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return myString.errorInvalidLotId_string;
-				else return true;
-			} 
-		}
-	]
-
-	inquirer.prompt(question).then((answer) => {
-		Model.searchByLot(answer.lotto).then((result) => {
-			if (result) {
-				console.log();
-				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
-				table_printer.printTable(table);
-			}
-			console.log();
-			trasformatore(myAccountAddress);
-		});
-	});
 }
 
 function purchase_material() {
@@ -110,14 +83,6 @@ function purchase_material() {
             }
 		});
     });		
-}
-
-function check_lots() {
-    Model.checkMyLots(myAccountAddress).then((result) => {
-        if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
-		console.log();
-		trasformatore(myAccountAddress);
-    });
 }
 
 function add_product(){
@@ -256,16 +221,6 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
 									console.log();
 									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
 									table_printer.printTable(table);
-                                    console.log();
-                                    Model.mintNFT(myAccountAddress).then((result) => {
-                                        if (result) {
-                                            Model.getTokenID(myAccountAddress).then((result) => {
-                                                if (result) {
-                                                    console.log(result);
-                                                }
-                                            })
-                                        }
-                                    })
 								}
 								console.log();
 						        trasformatore(myAccountAddress);	

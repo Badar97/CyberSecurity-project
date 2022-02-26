@@ -28,9 +28,9 @@ function fornitore(address) {
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
             case question.choices[0]: add_raw_material(); break;
-			case question.choices[1]: check_lots(); break;
-			case question.choices[2]: search_name(); break;
-			case question.choices[3]: search_lot(); break;
+			case question.choices[1]: Helper.check_lots(myAccountAddress, fornitore); break;
+			case question.choices[2]: Helper.search_name(myAccountAddress, fornitore); break;
+			case question.choices[3]: Helper.search_lot(myAccountAddress, fornitore); break;
 			case question.choices[4]: Interface.interface(); break;
             case question.choices[5]: default: return;
         }
@@ -103,59 +103,6 @@ function add_raw_material() {
 				console.log('\n' + myString.transactionCanceled_string + '\n');
 				fornitore(myAccountAddress);
 			}
-		});
-	});
-}
-
-function search_name() {
-	var question = [
-		{ 
-			type: 'input', 
-			name: 'nome', 
-			message: myString.insertNameRawMaterial_string 
-		}
-	];
-	inquirer.prompt(question).then((answer) => {
-		Model.searchByName(answer.nome).then((result) => {
-			if (result) if (!Helper.print_lots(result, true)) console.log(myString.unavailableLot_string);
-			console.log();
-			fornitore(myAccountAddress);
-		})
-	});
-}
-
-
-function check_lots() {
-    Model.checkMyLots(myAccountAddress).then((result) => {
-        if (result) if (!Helper.print_lots(result, false)) console.log(myString.noneLotPurchase_string);
-		console.log();
-		fornitore(myAccountAddress);
-    });
-}
-
-function search_lot() {
-	
-	var question = [
-		{ 
-			type: 'input', 
-			name: 'lotto', 
-			message: myString.insertLotId_string,
-			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return myString.errorInvalidLotId_string;
-				else return true;
-			} 
-		}
-	]
-
-	inquirer.prompt(question).then((answer) => {
-		Model.searchByLot(answer.lotto).then((result) => {
-			if (result) {
-				console.log();
-				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
-				table_printer.printTable(table);
-			}
-			console.log();
-			fornitore(myAccountAddress);
 		});
 	});
 }
