@@ -63,3 +63,5 @@ exports.insertFootprintTransform_string = 'INSERISCI IL FOOTPRINT ASSOCIATO ALLA
 /* -- STRINGHE CLIENTE -- */
 exports.menuCliente_string = 'MENU\' CLIENTE';
 exports.purchaseMaterial =  'ACQUISTA UN PRODOTTO';
+exports.checkPurchasedNFT_string = 'VISUALIZZA PRODOTTI ACQUISTATI';
+exports.notPurchasedNFT_string = 'NON HAI ACQUISTATO ALCUN PRODOTTO';

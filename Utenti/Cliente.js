@@ -17,6 +17,7 @@ function cliente(address) {
             message: myString.menuCliente_string,
             choices: [
                 myString.purchaseMaterial,
+                myString.checkPurchasedNFT_string,
                 myString.back_string,
                 myString.exit_string
             ]
@@ -25,8 +26,9 @@ function cliente(address) {
     inquirer.prompt(question).then((answer) => {
         switch(answer.action) {
             case question.choices[0]: purchase_product(); break;
-            case question.choices[1]: Interface.interface(); break;
-            case question.choices[2]: default: return;
+            case question.choices[1]: check_NFT(); break;
+            case question.choices[2]: Interface.interface(); break;
+            case question.choices[3]: default: return;
         }
     });
 }
@@ -111,6 +113,28 @@ function purchase_product() {
             }
 		});
     });		
+}
+
+function check_NFT() {
+    Model.getURIsByAddress(myAccountAddress).then((result) => {
+        if (result) {
+            if (!result.length) {
+                console.log('\n' + myString.notPurchasedNFT_string + '\n');
+                cliente(myAccountAddress);
+            }
+            else {
+                console.log('\n--- NFT ---\n');
+                result.forEach(element => {
+                    console.log(JSON.parse(element));
+                });
+                console.log();
+                cliente(myAccountAddress);
+            }
+        } else {
+            console.log();
+            cliente(myAccountAddress);
+        }
+    });
 }
 
 exports.cliente = cliente;
