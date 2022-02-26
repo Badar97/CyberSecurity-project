@@ -32,6 +32,7 @@ function cliente(address) {
 }
 
 function purchase_material(){
+    /*
     Model.checkBuyableLots().then((result) => { 
         if (result) {
             var id = [];
@@ -63,9 +64,22 @@ function purchase_material(){
             console.log();
             cliente(myAccountAddress);
         }
-    }
+    })
+    */
 
-    )
+    Model.buyProduct(1, myAccountAddress).then((result) => {
+        if (result) {
+            Model.getTokenArray(myAccountAddress).then((result) => {
+                if (result) console.log(result);
+                Model.getTokenURI(result[0]).then((result) => {
+                    if (result) {
+                        console.log('NFT: ');
+                        console.log(result);
+                    }
+                })
+            })
+        }
+    })
 }
 
 exports.cliente = cliente;

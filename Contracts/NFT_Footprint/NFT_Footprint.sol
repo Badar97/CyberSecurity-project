@@ -12,20 +12,61 @@ contract NFT_Footprint is ERC721, ERC721Enumerable, Ownable {
 
     Counters.Counter private _tokenIdCounter;
 
+    mapping(uint => Product) public attributes;
+
+    struct Product {
+        string name;
+        uint footprint;
+    }
+
     constructor() ERC721("NFT_Footprint", "NFTFP") {}
 
-    function _baseURI() internal pure override returns (string memory) {
-        return "https://gruppo6.com/";
-    }
-
-    function safeMint(address to) public {
+    function mint(address _to, string memory _name, uint _footprint) public returns(uint) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
+        _safeMint(_to, tokenId);
+        attributes[tokenId] = Product(_name, _footprint);
+        return tokenId;
     }
+
+    function tokenURI(uint256 tokenId) override(ERC721) public view returns (string memory) {
+        string memory json = string(
+            abi.encodePacked(
+                '{',
+                ' "id" : "', uint2str(tokenId), '",',
+                ' "attributes" : [{ "nome" : "', attributes[tokenId].name, '"}, { "footprint" : "', uint2str(attributes[tokenId].footprint), '"}]',             
+                '}'
+            )
+        );
+        return json;
+    }   
 
     function returnBalance(address _add) public view returns (uint) {
         return balanceOf(_add);
+    }
+
+
+    // toString()
+    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len;
+        while (_i != 0) {
+            k = k-1;
+            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
+            bytes1 b1 = bytes1(temp);
+            bstr[k] = b1;
+            _i /= 10;
+        }
+        return string(bstr);
     }
 
     // The following functions are overrides required by Solidity.

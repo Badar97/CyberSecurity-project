@@ -13,7 +13,7 @@ const CarbonFootprint2 = new web3_2.eth.Contract(abi_cf, contractAddress_cf);
 const CarbonFootprint3 = new web3_3.eth.Contract(abi_cf, contractAddress_cf);
 
 function print_error(error) {
-	console.log('\n' + error.toString().slice(43));
+	console.log('\n' + error.toString().slice(0));
 }
 
 //MODEL GENERICO
@@ -95,6 +95,36 @@ async function addProduct(id, name, array, amount, footprint, myAccountAddress) 
 
 //MODEL CLIENTE
 
+async function buyProduct(lot_id, myAccountAddress) {
+	var result = null;
+	try {
+		await CarbonFootprint3.methods.buyProduct(lot_id).send({ from: myAccountAddress }).then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error);}
+    return result;
+}
+
+async function getTokenArray(myAccountAddress) {
+	var result = null;
+	try {
+		await CarbonFootprint3.methods.getTokenArray(myAccountAddress).call().then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error) }
+    return result;
+}
+
+async function getTokenURI(token_ID) {
+	var result = null;
+	try {
+		await CarbonFootprint3.methods.getTokenURI(token_ID).call().then((response) => {
+			result = response;
+		});
+	} catch (error) { print_error(error) }
+    return result;
+}
+
 
 
 exports.getLastID = getLastID;
@@ -104,3 +134,7 @@ exports.searchByLot = searchByLot;
 exports.checkMyLots = checkMyLots;
 exports.purchaseLot = purchaseLot;
 exports.addProduct = addProduct;
+
+exports.buyProduct = buyProduct;
+exports.getTokenArray = getTokenArray;
+exports.getTokenURI = getTokenURI;

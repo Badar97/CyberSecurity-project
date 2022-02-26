@@ -2,7 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-contract CarbonFootprint {
+import "../NFT_Footprint/NFT_Footprint.sol";
+
+contract CarbonFootprint is NFT_Footprint {
 
     // LOTTI DI MATERIE PRIME E DI PRODOTTI
     struct Lot {
@@ -24,6 +26,9 @@ contract CarbonFootprint {
 
     // MEMORIZZAZIONE LOTTI PER PROPRIETARIO (TRASFORMATORE)
     mapping(address => uint[]) private getLotByAddress;
+
+    // MEMORIZZAZIONE ID NFT
+    mapping(address => uint[]) private getTokenIDByAddress;
 
     // COSTRUTTORE
     address supplier;
@@ -142,6 +147,25 @@ contract CarbonFootprint {
         }
 
         addLot(_id, _name, _total_carbonfootprint, _amount);
+    }
+
+    // ACQUISTO PRODOTTO FINITO (CLIENTE)
+    function buyProduct(uint _id) public {
+        require (msg.sender == customer, "ERRORE - SOLO I CLIENTI POSSONO ESEGUIRE QUESTA FUNZIONE");
+
+        getLotByID[_id].residual_amount -= 1;
+
+        uint new_id = mint(msg.sender, getLotByID[_id].name, getLotByID[_id].carbonfootprint);
+        
+        getTokenIDByAddress[msg.sender].push(new_id);
+    }
+
+    function getTokenArray(address _add) public view returns (uint[] memory) {
+        return getTokenIDByAddress[_add];
+    }
+
+    function getTokenURI(uint _tokenID) public view returns (string memory) {
+        return tokenURI(_tokenID);
     }
 }
 
