@@ -13,7 +13,7 @@ const CarbonFootprint2 = new web3_2.eth.Contract(abi_cf, contractAddress_cf);
 const CarbonFootprint3 = new web3_3.eth.Contract(abi_cf, contractAddress_cf);
 
 function print_error(error) {
-	console.log('\n' + error.toString().slice(0));
+	console.log('\n' + error.toString().slice(43));
 }
 
 //MODEL GENERICO

@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 const table_printer = require('console-table-printer');
-const Interface = require('../Interface.js');
 const Model = require('../Utils/Model.js');
 const myString = require("../Assets/string.js");
 

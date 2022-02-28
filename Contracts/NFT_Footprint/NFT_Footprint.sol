@@ -17,15 +17,16 @@ contract NFT_Footprint is ERC721, ERC721Enumerable, Ownable {
     struct Product {
         string name;
         uint footprint;
+        uint product_lot;
     }
 
     constructor() ERC721("NFT_Footprint", "NFTFP") {}
 
-    function mint(address _to, string memory _name, uint _footprint) public returns(uint) {
+    function mint(address _to, string memory _name, uint _footprint, uint _product_lot) public returns(uint) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(_to, tokenId);
-        attributes[tokenId] = Product(_name, _footprint);
+        attributes[tokenId] = Product(_name, _footprint, _product_lot);
         return tokenId;
     }
 
@@ -34,7 +35,7 @@ contract NFT_Footprint is ERC721, ERC721Enumerable, Ownable {
             abi.encodePacked(
                 '{',
                 ' "id" : "', uint2str(tokenId), '",',
-                ' "attributes" : [{ "name" : "', attributes[tokenId].name, '"}, { "footprint" : "', uint2str(attributes[tokenId].footprint), '"}]',             
+                ' "attributes" : [{ "name" : "', attributes[tokenId].name, '"}, { "footprint" : "', uint2str(attributes[tokenId].footprint), '"}, { "product_lot" : "', uint2str(attributes[tokenId].product_lot), '"}]',             
                 '}'
             )
         );

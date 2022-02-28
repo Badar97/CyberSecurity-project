@@ -153,7 +153,7 @@ contract CarbonFootprint is NFT_Footprint {
     function buyProduct(uint _id) public {
         require (msg.sender == customer, "ERRORE - SOLO I CLIENTI POSSONO ESEGUIRE QUESTA FUNZIONE");
         getLotByID[_id].residual_amount -= 1;
-        uint new_id = mint(msg.sender, getLotByID[_id].name, getLotByID[_id].carbonfootprint/getLotByID[_id].amount);
+        uint new_id = mint(msg.sender, getLotByID[_id].name, getLotByID[_id].carbonfootprint/getLotByID[_id].amount, _id);
         getTokenIDByAddress[msg.sender].push(new_id);
     }
 
