@@ -50,7 +50,7 @@ function purchase_material() {
 			if (result) {
                 var id = [];
                 result.forEach(element => { if (!element.sold && element.residual_amount > 0) id.push(element.id) });
-                if (!Helper.print_lots(result, true)) {
+                if (!Helper.print_lots(result, true, true, myAccountAddress)) {
                     console.log(myString.unavailableLot_string + '\n');
                     trasformatore(myAccountAddress);
                 } else {
@@ -125,12 +125,14 @@ function add_product(){
 
     inquirer.prompt(question).then((answer) => {
         Model.checkMyLots(myAccountAddress).then((result) => {
-
-            var id = [];
-            result.forEach(element => { if (element.residual_amount > 0) id.push(element.id) }); 
-
-            add_product_details(id, result, choice_array, answer);
-
+            if (result) {
+                var id = [];
+                result.forEach(element => { if (element.residual_amount > 0) id.push(element.id) }); 
+                add_product_details(id, result, choice_array, answer);
+            } else {
+                console.log();
+                trasformatore(myAccountAddress);
+            }
         });
     });
 }
@@ -147,7 +149,7 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
     ]
     
     console.log('\n' + myString.lotsOwnProperty_string);
-    if (lot_array) if (!Helper.print_lots(lot_array, false)) {
+    if (!Helper.print_lots(lot_array, false, false, myAccountAddress)) {
         console.log(myString.noneLotPurchase_string + '\n');
         trasformatore(myAccountAddress);
     } else {

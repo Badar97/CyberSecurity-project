@@ -13,7 +13,7 @@ function search_name(myAccountAddress, menu_function) {
 	];
 	inquirer.prompt(question).then((answer) => {
 		Model.searchByName(answer.nome).then((result) => {
-			if (result) if (!print_lots(result, true)) console.log(myString.unavailableLot_string);
+			if (result) if (!print_lots(result, true, false, myAccountAddress)) console.log(myString.unavailableLot_string);
 			console.log();
 			if (menu_function) menu_function(myAccountAddress);
 		})
@@ -49,17 +49,17 @@ function search_lot(myAccountAddress, menu_function) {
 
 function check_lots(myAccountAddress, menu_function) {
     Model.checkMyLots(myAccountAddress).then((result) => {
-        if (result) if (!print_lots(result, false)) console.log(myString.noneLotPurchase_string);
+        if (result) if (!print_lots(result, false, false, myAccountAddress)) console.log(myString.noneLotPurchase_string);
 		console.log();
 		if (menu_function) menu_function(myAccountAddress);
     });
 }
 
-function print_lots(array, check) {
+function print_lots(array, check_availability, check_owner, address) {
     console.log();
     var table = [];
     array.forEach(element => {
-        if ((!element.sold && element.residual_amount > 0) || !check) {
+        if ((!element.sold && element.residual_amount > 0 || !check_availability) && (element.owner != address || !check_owner) && element.id != 0) {
             var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
             table.push(new_row);
         }

@@ -106,11 +106,17 @@ contract CarbonFootprint is NFT_Footprint {
     function purchaseLot(uint[] memory _id) public {
         require (msg.sender == transformer, "ERRORE - SOLO I TRASFORMATORI POSSONO ESEGUIRE QUESTA FUNZIONE");
         for (uint i = 0; i < _id.length; i++) {
-            getLotByID[_id[i]].sold = true;
-            getLotByAddress[msg.sender].push(_id[i]);
 
             //ID LOTTO 0: UTENTE NON HA PIU' IN POSSESSO QUEL LOTTO
-            delete getLotByAddress[getLotByID[_id[i]].owner];
+            uint size = getLotByAddress[getLotByID[_id[i]].owner].length;
+            for (uint j = 0; j < size; j++) {
+                if (getLotByAddress[getLotByID[_id[i]].owner][j] == _id[i])
+                    delete getLotByAddress[getLotByID[_id[i]].owner][j];
+            }
+
+            getLotByID[_id[i]].sold = true;
+            getLotByID[_id[i]].owner = msg.sender;
+            getLotByAddress[msg.sender].push(_id[i]);
         }      
     }
 

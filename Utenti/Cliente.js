@@ -46,7 +46,7 @@ function purchase_product() {
 			if (result) {
                 var id = [];
                 result.forEach(element => { if (!element.sold && element.residual_amount > 0) id.push(element.id) });
-                if (!Helper.print_lots(result, true)) {
+                if (!Helper.print_lots(result, true, false, myAccountAddress)) {
                     console.log(myString.unavailableLot_string + '\n');
                     cliente(myAccountAddress);
                 } else {
