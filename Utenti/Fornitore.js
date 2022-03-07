@@ -53,7 +53,7 @@ function add_raw_material() {
 			name: 'footprint', 
 			message: myString.footprint_string, 
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return myString.errorFootprintInt_string;
+				if (isNaN(parseFloat(answer)) || !Number.isInteger(parseFloat(answer))) return myString.errorFootprintInt_string;
 				else if (parseInt(answer) < 0) return myString.errorFootprintNegative_string
 				return true;
 			} 
@@ -63,7 +63,7 @@ function add_raw_material() {
 			name: 'amount', 
 			message: myString.quantity_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return myString.errorQuantityInt_string;
+				if (isNaN(parseFloat(answer)) || !Number.isInteger(parseFloat(answer))) return myString.errorQuantityInt_string;
 				else if (parseInt(answer) <= 0) return myString.errorQuantityPositive_string
 				return true;
 			}

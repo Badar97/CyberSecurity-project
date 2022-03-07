@@ -72,7 +72,7 @@ contract CarbonFootprint is NFT_Footprint {
         Lot memory new_lot = Lot({
             id: _id,
             name: _name,
-            carbonfootprint: _carbonfootprint, 
+            carbonfootprint: _carbonfootprint * _amount, 
             amount: _amount,
             residual_amount: _amount,
             sold: false,
@@ -148,7 +148,7 @@ contract CarbonFootprint is NFT_Footprint {
             uint lot_carbonfootprint = lot.carbonfootprint;
             uint lot_amount = lot.amount;
             uint amount_used = _lot_amount[1][i];
-            _total_carbonfootprint += lot_carbonfootprint / lot_amount * amount_used + _footprint;
+            _total_carbonfootprint += lot_carbonfootprint / lot_amount * amount_used + _footprint * _amount;
             getLotByID[_lot_amount[0][i]].residual_amount -= _lot_amount[1][i];
         }
 

@@ -102,7 +102,7 @@ function add_product(){
 			name: 'amount', 
 			message: myString.quantity_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return myString.errorQuantityInt_string;
+				if (isNaN(parseFloat(answer)) || !Number.isInteger(parseFloat(answer))) return myString.errorQuantityInt_string;
 				else if (parseInt(answer) <= 0) return myString.errorQuantityPositive_string
 				return true;
 			}
@@ -112,7 +112,7 @@ function add_product(){
 			name: 'footprint', 
 			message: myString.transformationFootprint_string,
 			validate: (answer) => {
-				if (isNaN(parseInt(answer))) return myString.errorFootprintInt_string;
+				if (isNaN(parseFloat(answer)) || !Number.isInteger(parseFloat(answer))) return myString.errorFootprintInt_string;
 				else if (parseInt(answer) < 0) return myString.errorFootprintNegative_string
 				return true;
 			} 
@@ -167,7 +167,7 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
                             if(element.id == answer2.lotto) residual = element.residual_amount;
                         });
 
-                        if (isNaN(parseInt(answer))) return myString.errorQuantityInt_string;
+                        if (isNaN(parseFloat(answer)) || !Number.isInteger(parseFloat(answer))) return myString.errorQuantityInt_string;
                         else if (parseInt(answer) <= 0) return myString.errorQuantityPositive_string;
                         else if (parseInt(answer) > parseInt(residual)) return myString.errorResidualQuantity_string + residual + myString.errorResidualQuantityFinal_string;
                         return true;
@@ -215,7 +215,7 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
 				trasformatore(myAccountAddress);
             } else {
                 Model.getLastID().then((last_id) => {
-                    Model.addProduct(last_id, answer.nome.toUpperCase(), choice_array, answer.amount, answer.footprint, myAccountAddress).then((result) => {
+                    Model.addProduct(last_id, answer.nome.toUpperCase(), choice_array, parseInt(answer.amount), parseInt(answer.footprint), myAccountAddress).then((result) => {
 						if (result) {
 							console.log('\n' + myString.transactionPerformed_string);
 							Model.searchByLot(last_id).then((result) => {

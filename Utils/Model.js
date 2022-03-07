@@ -63,7 +63,7 @@ async function checkMyLots(myAccountAddress) {
 async function addRawMaterial(last_id, answer, myAccountAddress) {
 	var result = null;
 	try {
-		await CarbonFootprint1.methods.addRawMaterial(last_id, answer.nome.toUpperCase(), answer.footprint, answer.amount).send({from: myAccountAddress}).then((response) => {
+		await CarbonFootprint1.methods.addRawMaterial(last_id, answer.nome.toUpperCase(), parseInt(answer.footprint), parseInt(answer.amount)).send({from: myAccountAddress}).then((response) => {
 			result = response;
 		});
 	} catch (error) { print_error(error) }
