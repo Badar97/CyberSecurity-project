@@ -20,12 +20,12 @@
  - @openzeppelin/contracts
  
  ## Avvio del progetto
- Entrare da terminale nella cartella creata da Quorum Wizard e lanciare lo script di avvio:
+ Entrare da terminale nella directory creata da Quorum Wizard e lanciare lo script di avvio:
  ```zsh 
  $ cd network/3-nodes-quickstart
  $ ./start.sh
  ```
- Se l'operazione ha esito positivo, entrare nella cartella clonata in precedenza e, solo al primo avvio, eseguire il comando:
+ Se l'operazione ha esito positivo, entrare nella directory clonata in precedenza e, solo al primo avvio, eseguire il comando:
  ```zsh 
  $ cd CyberSecurity-project
  $ node ./Initialize.js
@@ -35,7 +35,7 @@
  $ node ./Interface.js
  ```
  ## Test del progetto
- Selezionare il wallet al quale si desidera accedere tenendo conto del fatto che ad ognuno di essi è associato un ruole diverso, rispettivamente:
+ Selezionare il wallet al quale si desidera accedere tenendo conto del fatto che ad ognuno di essi è associato un ruolo diverso, rispettivamente:
  - Fornitore
  - Trasformatore
  - Cliente
@@ -58,12 +58,12 @@
  <img src = "/Assets/ImageREADME/MenuCliente.png" height = 110>
  
  ## Chiusura del progetto
- Per la chiusura del progetto basta eseguire il comando
+ Per mettere in stop la blockchain basta eseguire il comando
  ```zsh 
  $ cd network/3-nodes-quickstart
  $ ./stop.sh
  ```
- terminando i processi relativi ai 3 nodi
+ che terminerà i processi relativi ai 3 nodi
 
  
   
