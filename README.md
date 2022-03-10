@@ -35,7 +35,26 @@
  $ node ./Interface.js
  ```
  ## Test del progetto
+ Selezionare il wallet al quale si desidera accedere tenendo conto del fatto che ad ognuno di essi è associato un ruole diverso, rispettivamente:
+ - Fornitore
+ - Trasformatore
+ - Cliente
+ <img src = "/Assets/ImageREADME/SelectWallet.png" height = 100>
  
+ ### Fornitore
+ Selezionando il wallet associato al Fornitore sarà possibile scegliere tra le seguenti operazioni: \
+ \
+ <img src = "/Assets/ImageREADME/MenuFornitore.png" height = 135>
+ 
+ ### Trasformatore 
+ Selezionando il wallet associato al Trasforatore sarà possibile scegliere tra le seguenti operazioni: \
+ \
+ <img src = "/Assets/ImageREADME/MenuTrasformatore.png" height = 135>
+ 
+ ### Cliente  
+ Selezionando il wallet associato al Cliente sarà possibile scegliere tra le seguenti operazioni: \
+ \
+ <img src = "/Assets/ImageREADME/MenuCliente.png" height = 110>
  
  ## Chiusura del progetto
  Per la chiusura del progetto basta eseguire il comando
