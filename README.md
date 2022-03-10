@@ -1,9 +1,7 @@
  # Guida d'utilizzo
  ### Progetto Software Cybersecurity a.a 2021/2022
- ##### Ali Waqar - Angelini - Di Silvestre - Scuriatti
- .
- > Descrizione dei passaggi da eseguire per l'installazione e il test del progetto.
-
+ #### Ali Waqar - Angelini - Di Silvestre - Scuriatti
+ 
  ## Installazione Quorum Wizard
  Seguire le istruzioni del seguente link per ottenere una blockchain privata con 3 nodi: https://github.com/ConsenSys/quorum-wizard
  
@@ -13,7 +11,13 @@
  ```zsh 
  $ npm install
  ```
- che installerà i pacchetti necessari al funzionamento del software: web3, solc, quorum-js, inquirer, console-table-printer, @openzeppelin/contracts.
+ che installerà i pacchetti necessari al funzionamento del software: 
+ - web3
+ - solc
+ - quorum-js
+ - inquirer
+ - console-table-printer
+ - @openzeppelin/contracts
  
  ## Avvio del progetto
  Entrare da terminale nella cartella creata da Quorum Wizard e lanciare lo script di avvio:
@@ -23,13 +27,15 @@
  ```
  Se l'operazione ha esito positivo, entrare nella cartella clonata in precedenza e, solo al primo avvio, eseguire il comando:
  ```zsh 
+ $ cd CyberSecurity-project
  $ node ./Initialize.js
  ```
  Se l'operazione ha esito positivo, per avviare l'interfaccia eseguire il comando:
- ```zsh 
+ ```zsh
  $ node ./Interface.js
  ```
  ## Test del progetto
+ 
  
  ## Chiusura del progetto
  Per la chiusura del progetto basta eseguire il comando
