@@ -39,6 +39,7 @@
  - Fornitore
  - Trasformatore
  - Cliente
+ \
  <img src = "/Assets/ImageREADME/SelectWallet.png" height = 100>
  
  ### Fornitore
