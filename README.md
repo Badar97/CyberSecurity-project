@@ -63,7 +63,7 @@
  $ cd network/3-nodes-quickstart
  $ ./stop.sh
  ```
- terminando i processi relativi ai 3 nodi.
+ terminando i processi relativi ai 3 nodi
 
  
   
