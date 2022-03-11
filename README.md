@@ -2,7 +2,7 @@
  ### Progetto Software Cybersecurity a.a 2021/2022
  #### Ali Waqar - Angelini - Di Silvestre - Scuriatti
  
- > Nota: La seguente procedura è da intendersi per ambiente MacOS o Linux.
+ > Nota: La seguente procedura è da intendersi per ambiente macOS o Linux.
  
  ## Installazione Quorum Wizard
  Seguire le istruzioni del seguente link per ottenere una blockchain privata con 3 nodi: https://github.com/ConsenSys/quorum-wizard
@@ -36,7 +36,7 @@
  ```zsh
  $ node ./Interface.js
  ```
- ## Test del progetto
+ ## Funzionamento dell'interfaccia
  Selezionare il wallet al quale si desidera accedere tenendo conto del fatto che ad ognuno di essi è associato un ruolo diverso, rispettivamente:
  - Fornitore
  - Trasformatore
