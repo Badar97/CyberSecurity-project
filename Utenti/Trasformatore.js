@@ -196,7 +196,7 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
                                     residual_amount: element.residual_amount - answer3.amount,
                                     sold: element.sold
                                 };
-                                new_array[index] = residual_lot;
+                                if (element.residual_amount - answer3.amount != 0) new_array[index] = residual_lot;
                             }
                         });   
 
@@ -221,7 +221,7 @@ function add_product_details(id_array, lot_array, choice_array, answer) {
 							Model.searchByLot(last_id).then((result) => {
                                 if (result) {
 									console.log();
-									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
+									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINTxUNITA: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
 									table_printer.printTable(table);
 								}
 								console.log();

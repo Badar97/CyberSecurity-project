@@ -87,7 +87,7 @@ function add_raw_material() {
 							Model.searchByLot(last_id).then((result) => {
 								if (result) {
 									console.log();
-									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
+									var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINTxUNITA: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
 									table_printer.printTable(table);
 								}
 								console.log();

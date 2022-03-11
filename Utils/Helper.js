@@ -38,7 +38,7 @@ function search_lot(myAccountAddress, menu_function) {
 		Model.searchByLot(answer.lotto).then((result) => {
 			if (result) {
 				console.log();
-				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINT: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
+				var table = [{ LOTTO: result.id, MATERIA: result.name, FOOTPRINTxUNITA: result.carbonfootprint, QUANTITA: result.amount, RESIDUO: result.residual_amount, VENDUTO: result.sold }];
 				table_printer.printTable(table);
 			}
 			console.log();
@@ -60,7 +60,7 @@ function print_lots(array, check_availability, check_owner, address) {
     var table = [];
     array.forEach(element => {
         if ((!element.sold && element.residual_amount > 0 || !check_availability) && (element.owner != address || !check_owner) && element.id != 0) {
-            var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINT: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
+            var new_row = { LOTTO: element.id, MATERIA: element.name, FOOTPRINTxUNITA: element.carbonfootprint, QUANTITA: element.amount, RESIDUO: element.residual_amount };
             table.push(new_row);
         }
     });

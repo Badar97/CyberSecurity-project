@@ -43,16 +43,16 @@ contract CarbonFootprint is NFT_Footprint {
         customer = _customer;
         id_lot = 1;
 
-        addRawMaterial(id_lot, 'FARINA', 100, 100);
-        addRawMaterial(id_lot, 'SALE', 100, 100);
-        addRawMaterial(id_lot, 'PEPE', 100, 100);
-        addRawMaterial(id_lot, 'POMODORI', 100, 100);
-        addRawMaterial(id_lot, 'FARINA', 100, 100);
-        addRawMaterial(id_lot, 'GRANO', 100, 100);
-        addRawMaterial(id_lot, 'UOVA', 100, 100);
-        addRawMaterial(id_lot, 'FARINA', 100, 100);
-        addRawMaterial(id_lot, 'UOVA', 100, 100);
-        addRawMaterial(id_lot, 'PEPE', 100, 100);
+        addRawMaterial(id_lot, 'FARINA', 5, 90);
+        addRawMaterial(id_lot, 'SALE', 1, 10);
+        addRawMaterial(id_lot, 'PEPE', 2, 50);
+        addRawMaterial(id_lot, 'POMODORI', 3, 30);
+        addRawMaterial(id_lot, 'FARINA', 5, 20);
+        addRawMaterial(id_lot, 'GRANO', 4, 20);
+        addRawMaterial(id_lot, 'UOVA', 6, 100);
+        addRawMaterial(id_lot, 'FARINA', 5, 80);
+        addRawMaterial(id_lot, 'UOVA', 6, 90);
+        addRawMaterial(id_lot, 'PEPE', 2, 20);
     }
 
     // INSERIMENTO NUOVA MATERIA PRIMA (FORNITORE)
@@ -72,7 +72,7 @@ contract CarbonFootprint is NFT_Footprint {
         Lot memory new_lot = Lot({
             id: _id,
             name: _name,
-            carbonfootprint: _carbonfootprint * _amount, 
+            carbonfootprint: _carbonfootprint, 
             amount: _amount,
             residual_amount: _amount,
             sold: false,
@@ -146,9 +146,8 @@ contract CarbonFootprint is NFT_Footprint {
         for(uint i = 0; i < _lot_amount[0].length; i++){ 
             Lot memory lot = getLotByID[_lot_amount[0][i]];
             uint lot_carbonfootprint = lot.carbonfootprint;
-            uint lot_amount = lot.amount;
             uint amount_used = _lot_amount[1][i];
-            _total_carbonfootprint += lot_carbonfootprint / lot_amount * amount_used + _footprint * _amount;
+            _total_carbonfootprint += lot_carbonfootprint * amount_used + _footprint;
             getLotByID[_lot_amount[0][i]].residual_amount -= _lot_amount[1][i];
         }
 
@@ -159,7 +158,7 @@ contract CarbonFootprint is NFT_Footprint {
     function buyProduct(uint _id) public {
         require (msg.sender == customer, "ERRORE - SOLO I CLIENTI POSSONO ESEGUIRE QUESTA FUNZIONE");
         getLotByID[_id].residual_amount -= 1;
-        uint new_id = mint(msg.sender, getLotByID[_id].name, getLotByID[_id].carbonfootprint/getLotByID[_id].amount, _id);
+        uint new_id = mint(msg.sender, getLotByID[_id].name, getLotByID[_id].carbonfootprint, _id);
         getTokenIDByAddress[msg.sender].push(new_id);
     }
 
